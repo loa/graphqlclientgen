@@ -1,13 +1,21 @@
 package client
 
-type (
-	// Client for graphqlclient
-	Client struct{}
+import (
+	"github.com/loa/graphqlclientgen"
 )
 
-// New creates new graphqlclient
-func New() Client {
-	return Client{}
+type (
+	// Client for graphqlclient
+	Client struct {
+		protoClient graphqlclientgen.ProtoClient
+	}
+)
+
+// New create new graphqlclient
+func New(protoClient graphqlclientgen.ProtoClient) Client {
+	return Client{
+		protoClient: protoClient,
+	}
 }
 
 type (
@@ -15,13 +23,31 @@ type (
 )
 
 // Todos query function
-func (client Client) Todos() (Todo, error) {
-	// query
-	return Todo{}, nil
+func (client Client) Todos() ([]Todo, error) {
+	body := graphqlclientgen.Body{
+		Query: "query {}",
+	}
+
+	var res []Todo
+
+	if err := client.protoClient.Do(body, &res); err != nil {
+		return nil, err
+	}
+
+	return res, nil
 }
 
 // CreateTodo mutation function
 func (client Client) CreateTodo() (Todo, error) {
-	// mutation
-	return Todo{}, nil
+	body := graphqlclientgen.Body{
+		Query: "mutation {}",
+	}
+
+	var res Todo
+
+	if err := client.protoClient.Do(body, &res); err != nil {
+		return Todo{}, err
+	}
+
+	return res, nil
 }

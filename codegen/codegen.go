@@ -46,19 +46,20 @@ type (
 		QueryType string
 
 		Arguments []SchemaFunctionArgument
-
-		ReturnType    string
-		ReturnNonNull bool
+		Type      SchemaType
 	}
 
 	SchemaFunctionArgument struct {
-		Name    string
-		Type    string
-		NonNull bool
+		Name string
+		Type SchemaType
 	}
 
 	SchemaType struct {
-		Name string
+		Name    string
+		NonNull bool
+
+		List        bool
+		ListNonNull bool
 	}
 )
 
@@ -172,6 +173,7 @@ func (gen *Generator) loadSchemas() error {
 }
 
 func (gen *Generator) parseSchemas() error {
+	// TODO: add schema comments to golang functions
 	types := map[string]bool{}
 
 	// add client query functions
@@ -181,12 +183,26 @@ func (gen *Generator) parseSchemas() error {
 			continue
 		}
 
+		var schemaType SchemaType
+		if field.Type.NamedType == "" {
+			schemaType = SchemaType{
+				Name:    field.Type.Elem.NamedType,
+				NonNull: field.Type.Elem.NonNull,
+
+				List:        true,
+				ListNonNull: field.Type.NonNull,
+			}
+		} else {
+			schemaType = SchemaType{
+				Name:    field.Type.NamedType,
+				NonNull: field.Type.NonNull,
+			}
+		}
+
 		schemaFunction := SchemaFunction{
 			Name:      capitalizeFirstLetter(field.Name),
 			QueryType: "query",
-
-			ReturnType:    field.Type.Elem.NamedType,
-			ReturnNonNull: field.Type.NonNull,
+			Type:      schemaType,
 		}
 
 		// add returned type to types
@@ -203,12 +219,27 @@ func (gen *Generator) parseSchemas() error {
 			continue
 		}
 
+		var schemaType SchemaType
+		if field.Type.NamedType == "" {
+			schemaType = SchemaType{
+				Name:    field.Type.Elem.NamedType,
+				NonNull: field.Type.Elem.NonNull,
+
+				List:        true,
+				ListNonNull: field.Type.NonNull,
+			}
+		} else {
+			schemaType = SchemaType{
+				Name:    field.Type.NamedType,
+				NonNull: field.Type.NonNull,
+			}
+		}
+
 		schemaFunction := SchemaFunction{
 			Name:      capitalizeFirstLetter(field.Name),
 			QueryType: "mutation",
 
-			ReturnType:    field.Type.NamedType,
-			ReturnNonNull: field.Type.NonNull,
+			Type: schemaType,
 		}
 
 		// add returned type to types

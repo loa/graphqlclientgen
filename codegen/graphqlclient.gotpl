@@ -1,13 +1,21 @@
 package {{ .Config.Client.Package }}
 
-type (
-    // Client for graphqlclient
-    Client struct {}
+import (
+    "github.com/loa/graphqlclientgen"
 )
 
-// New creates new graphqlclient
-func New() Client {
-    return Client{}
+type (
+    // Client for graphqlclient
+    Client struct {
+		protoClient graphqlclientgen.ProtoClient
+    }
+)
+
+// New create new graphqlclient
+func New(protoClient graphqlclientgen.ProtoClient) Client {
+	return Client{
+		protoClient: protoClient,
+	}
 }
 
 type (
@@ -18,8 +26,30 @@ type (
 
 {{- range $fun := .Schema.Functions }}
 // {{ $fun.Name }} {{ $fun.QueryType }} function
-func (client Client) {{ $fun.Name }}() ({{ if not $fun.ReturnNonNull }}*{{ end }}{{ $fun.ReturnType }}, error) {
-    // {{ $fun.QueryType }}
-    return {{ $fun.ReturnType }}{}, nil
+func (client Client) {{ $fun.Name }}() ({{ if $fun.Type.List }}[]{{ end }}{{ if not $fun.Type.NonNull }}*{{ end }}{{ $fun.Type.Name }}, error) {
+    body := graphqlclientgen.Body{
+        Query: "{{ $fun.QueryType }} {}",
+    }
+
+
+    {{ if $fun.Type.List }}
+    var res []{{ if not $fun.Type.NonNull }}*{{ end }}{{ $fun.Type.Name }}
+    {{- else }}
+    var res {{ $fun.Type.Name }}
+    {{- end }}
+
+    if err := client.protoClient.Do(body, &res); err != nil {
+        {{- if and $fun.Type.NonNull (not $fun.Type.List)}}
+        return {{ $fun.Type.Name }}{}, err
+        {{- else }}
+        return nil, err
+        {{- end }}
+    }
+
+    {{ if $fun.Type.NonNull }}
+    return res, nil
+    {{- else }}
+    return &res, nil
+    {{- end }}
 }
 {{ end }}

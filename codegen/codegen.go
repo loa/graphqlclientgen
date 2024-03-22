@@ -110,7 +110,7 @@ func (gen *Generator) Generate() error {
 	}
 
 	// TODO: use relative path from config
-	filename := filepath.Join(gen.Config.Client.Dir, "graphqlclient.go")
+	filename := filepath.Join(gen.Config.Client.Dir, "generated.go")
 	f, err := os.Create(filename)
 	if err != nil {
 		return err

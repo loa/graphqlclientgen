@@ -1,0 +1,25 @@
+package {{ .Config.Client.Package }}
+
+type (
+    // Client for graphqlclient
+    Client struct {}
+)
+
+// New creates new graphqlclient
+func New() Client {
+    return Client{}
+}
+
+type (
+{{- range $type := .Schema.Types }}
+    {{ $type.Name }} struct {}
+{{- end }}
+)
+
+{{- range $fun := .Schema.Functions }}
+// {{ $fun.Name }} {{ $fun.QueryType }} function
+func (client Client) {{ $fun.Name }}() ({{ if not $fun.ReturnNonNull }}*{{ end }}{{ $fun.ReturnType }}, error) {
+    // {{ $fun.QueryType }}
+    return {{ $fun.ReturnType }}{}, nil
+}
+{{ end }}

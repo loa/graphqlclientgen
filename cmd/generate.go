@@ -1,4 +1,4 @@
-package generate
+package main
 
 import (
 	"log/slog"
@@ -8,7 +8,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func Cmd(*cli.Context) error {
+func generate(*cli.Context) error {
 	opts := &slog.HandlerOptions{
 		// AddSource: true,
 		Level: slog.LevelDebug,

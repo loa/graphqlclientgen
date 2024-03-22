@@ -25,10 +25,10 @@ type (
 )
 
 {{- range $fun := .Schema.Functions }}
-// {{ $fun.Name }} {{ $fun.QueryType }} function
-func (client Client) {{ $fun.Name }}() ({{ if $fun.Type.List }}[]{{ end }}{{ if not $fun.Type.NonNull }}*{{ end }}{{ $fun.Type.Name }}, error) {
+// {{ $fun.Name | capitalize }} {{ $fun.QueryType }} function
+func (client Client) {{ $fun.Name | capitalize }}() ({{ if $fun.Type.List }}[]{{ end }}{{ if not $fun.Type.NonNull }}*{{ end }}{{ $fun.Type.Name }}, error) {
     body := graphqlclientgen.Body{
-        Query: "{{ $fun.QueryType }} {}",
+        Query: "{{ $fun.QueryType }} { {{ $fun.Name }} {}}",
     }
 
 

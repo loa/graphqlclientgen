@@ -2,7 +2,6 @@ package codegen
 
 import (
 	"embed"
-	"encoding/json"
 	"log/slog"
 	"os"
 	"os/exec"
@@ -131,9 +130,10 @@ func (gen *Generator) Generate() error {
 
 func (gen *Generator) loadTemplates() error {
 	tpl := template.New("graphqlclient.gotpl").Funcs(template.FuncMap{
-		"json": func(in any) (string, error) {
-			out, err := json.Marshal(in)
-			return string(out), err
+		"capitalize": func(in string) (string, error) {
+			runes := []rune(in)
+			runes[0] = unicode.ToUpper(runes[0])
+			return string(runes), nil
 		},
 	})
 
@@ -200,7 +200,7 @@ func (gen *Generator) parseSchemas() error {
 		}
 
 		schemaFunction := SchemaFunction{
-			Name:      capitalizeFirstLetter(field.Name),
+			Name:      field.Name,
 			QueryType: "query",
 			Type:      schemaType,
 		}
@@ -236,7 +236,7 @@ func (gen *Generator) parseSchemas() error {
 		}
 
 		schemaFunction := SchemaFunction{
-			Name:      capitalizeFirstLetter(field.Name),
+			Name:      field.Name,
 			QueryType: "mutation",
 
 			Type: schemaType,
@@ -264,10 +264,4 @@ func gofmt(filename string) error {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stdout
 	return cmd.Run()
-}
-
-func capitalizeFirstLetter(in string) string {
-	runes := []rune(in)
-	runes[0] = unicode.ToUpper(runes[0])
-	return string(runes)
 }

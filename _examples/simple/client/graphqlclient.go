@@ -25,7 +25,7 @@ type (
 // Todos query function
 func (client Client) Todos() ([]Todo, error) {
 	body := graphqlclientgen.Body{
-		Query: "query {}",
+		Query: "query { todos {}}",
 	}
 
 	var res []Todo
@@ -40,7 +40,7 @@ func (client Client) Todos() ([]Todo, error) {
 // CreateTodo mutation function
 func (client Client) CreateTodo() (Todo, error) {
 	body := graphqlclientgen.Body{
-		Query: "mutation {}",
+		Query: "mutation { createTodo {}}",
 	}
 
 	var res Todo

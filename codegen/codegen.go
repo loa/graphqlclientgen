@@ -6,7 +6,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"strings"
 	"text/template"
 	"unicode"
 
@@ -99,7 +98,7 @@ func (gen *Generator) Generate() error {
 		return err
 	}
 
-	if err := gen.parseSchemas(); err != nil {
+	if err := gen.parseSchema(); err != nil {
 		return err
 	}
 
@@ -170,93 +169,6 @@ func (gen *Generator) loadSchemas() error {
 	var err error
 	gen.schemas, err = gqlparser.LoadSchema(sources...)
 	return err
-}
-
-func (gen *Generator) parseSchemas() error {
-	// TODO: add schema comments to golang functions
-	types := map[string]bool{}
-
-	// add client query functions
-	for _, field := range gen.schemas.Query.Fields {
-		if strings.HasPrefix(field.Name, "__") {
-			// skip __schema, __type, etc
-			continue
-		}
-
-		var schemaType SchemaType
-		if field.Type.NamedType == "" {
-			schemaType = SchemaType{
-				Name:    field.Type.Elem.NamedType,
-				NonNull: field.Type.Elem.NonNull,
-
-				List:        true,
-				ListNonNull: field.Type.NonNull,
-			}
-		} else {
-			schemaType = SchemaType{
-				Name:    field.Type.NamedType,
-				NonNull: field.Type.NonNull,
-			}
-		}
-
-		schemaFunction := SchemaFunction{
-			Name:      field.Name,
-			QueryType: "query",
-			Type:      schemaType,
-		}
-
-		// add returned type to types
-		types[field.Type.Elem.NamedType] = true
-
-		slog.Debug("query field", "name", field.Name)
-		gen.Schema.Functions = append(gen.Schema.Functions, schemaFunction)
-	}
-
-	// add client mutation functions
-	for _, field := range gen.schemas.Mutation.Fields {
-		if strings.HasPrefix(field.Name, "__") {
-			// skip __schema, __type, etc
-			continue
-		}
-
-		var schemaType SchemaType
-		if field.Type.NamedType == "" {
-			schemaType = SchemaType{
-				Name:    field.Type.Elem.NamedType,
-				NonNull: field.Type.Elem.NonNull,
-
-				List:        true,
-				ListNonNull: field.Type.NonNull,
-			}
-		} else {
-			schemaType = SchemaType{
-				Name:    field.Type.NamedType,
-				NonNull: field.Type.NonNull,
-			}
-		}
-
-		schemaFunction := SchemaFunction{
-			Name:      field.Name,
-			QueryType: "mutation",
-
-			Type: schemaType,
-		}
-
-		// add returned type to types
-		types[field.Type.NamedType] = true
-
-		slog.Debug("mutation field", "name", field.Name)
-		gen.Schema.Functions = append(gen.Schema.Functions, schemaFunction)
-	}
-
-	// generate all required types definitions
-	for t := range types {
-		gen.Schema.Types = append(gen.Schema.Types, SchemaType{
-			Name: t,
-		})
-	}
-
-	return nil
 }
 
 func gofmt(filename string) error {

@@ -4,6 +4,8 @@ package client
 
 import (
 	"context"
+	"encoding/json"
+	"errors"
 
 	"github.com/loa/graphqlclientgen"
 )
@@ -47,29 +49,51 @@ func New(protoClient graphqlclientgen.ProtoClient) Client {
 // CreateTodo (mutation) create a new todo
 func (client Client) CreateTodo(ctx context.Context) (Todo, error) {
 	body := graphqlclientgen.Body{
-		Query: "mutation { createTodo {}}",
+		Query: "mutation { createTodo { id, text } }",
 	}
 
-	var res Todo
-
+	var res graphqlclientgen.Response
 	if err := client.protoClient.Do(ctx, body, &res); err != nil {
 		return Todo{}, err
 	}
 
-	return res, nil
+	var data struct {
+		CreateTodo Todo `json:"createTodo"`
+	}
+
+	if len(res.Errors) > 0 {
+		return data.CreateTodo, errors.New(res.Errors[0].Message)
+	}
+
+	if err := json.Unmarshal(res.Data, &data); err != nil {
+		return data.CreateTodo, nil
+	}
+
+	return data.CreateTodo, nil
 }
 
 // Todos (query) returns all todos
 func (client Client) Todos(ctx context.Context) ([]Todo, error) {
 	body := graphqlclientgen.Body{
-		Query: "query { todos {}}",
+		Query: "query { todos { id, text } }",
 	}
 
-	var res []Todo
-
+	var res graphqlclientgen.Response
 	if err := client.protoClient.Do(ctx, body, &res); err != nil {
 		return nil, err
 	}
 
-	return res, nil
+	var data struct {
+		Todos []Todo `json:"todos"`
+	}
+
+	if len(res.Errors) > 0 {
+		return data.Todos, errors.New(res.Errors[0].Message)
+	}
+
+	if err := json.Unmarshal(res.Data, &data); err != nil {
+		return data.Todos, nil
+	}
+
+	return data.Todos, nil
 }

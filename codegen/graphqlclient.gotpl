@@ -4,6 +4,8 @@ package {{ .Config.Client.Package }}
 
 import (
 	"context"
+	"encoding/json"
+	"errors"
 
     "github.com/loa/graphqlclientgen"
 )
@@ -38,16 +40,10 @@ func (client Client) {{ $fun.Name | capitalize }}(ctx context.Context) (
 
 {{- if $fun.Type.List }}[]{{ end }}{{ if not $fun.Type.NonNull }}*{{ end }}{{ $fun.Type.Name }}, error) {
     body := graphqlclientgen.Body{
-        Query: "{{ $fun.QueryType }} { {{ $fun.Name }} {}}",
+        Query: "{{ $fun.QueryType }} { {{ $fun.Name }} { id, text } }",
     }
 
-
-    {{ if $fun.Type.List }}
-    var res []{{ if not $fun.Type.NonNull }}*{{ end }}{{ $fun.Type.Name }}
-    {{- else }}
-    var res {{ $fun.Type.Name }}
-    {{- end }}
-
+    var res graphqlclientgen.Response
     if err := client.protoClient.Do(ctx, body, &res); err != nil {
         {{- if and $fun.Type.NonNull (not $fun.Type.List)}}
         return {{ $fun.Type.Name }}{}, err
@@ -56,10 +52,34 @@ func (client Client) {{ $fun.Name | capitalize }}(ctx context.Context) (
         {{- end }}
     }
 
-    {{ if $fun.Type.NonNull }}
-    return res, nil
+    var data struct {
+    {{ if $fun.Type.List }}
+        {{ $fun.Name | capitalize }} []{{ if not $fun.Type.NonNull }}*{{ end }}{{ $fun.Type.Name }} `json:"{{ $fun.Name }}"`
     {{- else }}
-    return &res, nil
+        {{ $fun.Name | capitalize }} {{ $fun.Type.Name }} `json:"{{ $fun.Name }}"`
+    {{- end }}
+    }
+
+    if len(res.Errors) > 0 {
+        {{- if $fun.Type.NonNull }}
+        return data.{{ $fun.Name | capitalize }}, errors.New(res.Errors[0].Message)
+        {{- else }}
+        return nil, errors.New(res.Errors[0].Message)
+        {{- end }}
+    }
+
+	if err := json.Unmarshal(res.Data, &data); err != nil {
+        {{- if $fun.Type.NonNull }}
+        return data.{{ $fun.Name | capitalize }}, nil
+        {{- else }}
+        return nil, err
+        {{- end }}
+	}
+
+    {{ if $fun.Type.NonNull }}
+    return data.{{ $fun.Name | capitalize }}, nil
+    {{- else }}
+    return &data.{{ $fun.Name | capitalize }}, nil
     {{- end }}
 }
 {{ end }}

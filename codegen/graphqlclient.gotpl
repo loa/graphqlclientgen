@@ -3,6 +3,8 @@
 package {{ .Config.Client.Package }}
 
 import (
+	"context"
+
     "github.com/loa/graphqlclientgen"
 )
 
@@ -32,7 +34,9 @@ func New(protoClient graphqlclientgen.ProtoClient) Client {
 
 {{- range $fun := .Schema.Functions }}
 // {{ $fun.Name | capitalize }} ({{ $fun.QueryType }}) {{ stripPrefix $fun.Description $fun.Name }}
-func (client Client) {{ $fun.Name | capitalize }}() ({{ if $fun.Type.List }}[]{{ end }}{{ if not $fun.Type.NonNull }}*{{ end }}{{ $fun.Type.Name }}, error) {
+func (client Client) {{ $fun.Name | capitalize }}(ctx context.Context) (
+
+{{- if $fun.Type.List }}[]{{ end }}{{ if not $fun.Type.NonNull }}*{{ end }}{{ $fun.Type.Name }}, error) {
     body := graphqlclientgen.Body{
         Query: "{{ $fun.QueryType }} { {{ $fun.Name }} {}}",
     }
@@ -44,7 +48,7 @@ func (client Client) {{ $fun.Name | capitalize }}() ({{ if $fun.Type.List }}[]{{
     var res {{ $fun.Type.Name }}
     {{- end }}
 
-    if err := client.protoClient.Do(body, &res); err != nil {
+    if err := client.protoClient.Do(ctx, body, &res); err != nil {
         {{- if and $fun.Type.NonNull (not $fun.Type.List)}}
         return {{ $fun.Type.Name }}{}, err
         {{- else }}

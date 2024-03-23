@@ -3,6 +3,8 @@
 package client
 
 import (
+	"context"
+
 	"github.com/loa/graphqlclientgen"
 )
 
@@ -43,14 +45,14 @@ func New(protoClient graphqlclientgen.ProtoClient) Client {
 }
 
 // CreateTodo (mutation) create a new todo
-func (client Client) CreateTodo() (Todo, error) {
+func (client Client) CreateTodo(ctx context.Context) (Todo, error) {
 	body := graphqlclientgen.Body{
 		Query: "mutation { createTodo {}}",
 	}
 
 	var res Todo
 
-	if err := client.protoClient.Do(body, &res); err != nil {
+	if err := client.protoClient.Do(ctx, body, &res); err != nil {
 		return Todo{}, err
 	}
 
@@ -58,14 +60,14 @@ func (client Client) CreateTodo() (Todo, error) {
 }
 
 // Todos (query) returns all todos
-func (client Client) Todos() ([]Todo, error) {
+func (client Client) Todos(ctx context.Context) ([]Todo, error) {
 	body := graphqlclientgen.Body{
 		Query: "query { todos {}}",
 	}
 
 	var res []Todo
 
-	if err := client.protoClient.Do(body, &res); err != nil {
+	if err := client.protoClient.Do(ctx, body, &res); err != nil {
 		return nil, err
 	}
 

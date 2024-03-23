@@ -1,5 +1,7 @@
 package graphqlclientgen
 
+import "context"
+
 type (
 	HttpClient struct {
 		URL string
@@ -14,6 +16,6 @@ func NewHttpClient(url string) HttpClient {
 	}
 }
 
-func (client HttpClient) Do(body Body, in any) error {
+func (client HttpClient) Do(ctx context.Context, body Body, in any) error {
 	return nil
 }

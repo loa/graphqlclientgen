@@ -7,7 +7,6 @@ import (
 	"os/exec"
 	"path/filepath"
 	"text/template"
-	"unicode"
 
 	"github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
@@ -41,23 +40,22 @@ type (
 	SchemaFunction struct {
 		Name string
 		// QueryType is graphql type [query, mutation]
-		QueryType string
+		QueryType   string
+		Description string
 
-		Arguments []SchemaFunctionArgument
-		Type      SchemaType
-	}
-
-	SchemaFunctionArgument struct {
-		Name string
 		Type SchemaType
 	}
 
 	SchemaType struct {
-		Name    string
-		NonNull bool
+		Name        string
+		NonNull     bool
+		Description string
+		Kind        string
 
 		List        bool
 		ListNonNull bool
+
+		Fields map[string]SchemaType
 	}
 )
 
@@ -129,11 +127,9 @@ func (gen *Generator) Generate() error {
 
 func (gen *Generator) loadTemplates() error {
 	tpl := template.New("graphqlclient.gotpl").Funcs(template.FuncMap{
-		"capitalize": func(in string) (string, error) {
-			runes := []rune(in)
-			runes[0] = unicode.ToUpper(runes[0])
-			return string(runes), nil
-		},
+		"capitalize":  capitalize,
+		"initialism":  initialism,
+		"stripPrefix": stripPrefix,
 	})
 
 	var err error

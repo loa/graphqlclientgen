@@ -2,27 +2,67 @@
 #
 # https://gqlgen.com/getting-started/
 
+"""
+Todo entry with text and done status
+"""
 type Todo {
+  """
+  primary id of todo
+  """
   id: ID!
+  """
+  todo text
+  """
   text: String!
+  """
+  done status of todo
+  """
   done: Boolean!
+  """
+  user assigned to todo
+  """
   user: User!
 }
 
+"""
+User with name and assigned todos
+"""
 type User {
+  """
+  primary id of user
+  """
   id: ID!
+  """
+  name of user
+  """
   name: String!
+  """
+  all todos assigned to user
+  """
+  todos: [Todo!]!
 }
 
 type Query {
+  """
+  todos returns all todos
+  """
   todos: [Todo!]!
 }
 
 input NewTodo {
+  """
+  todo text
+  """
   text: String!
+  """
+  user to assign todo
+  """
   userId: String!
 }
 
 type Mutation {
+  """
+  createTodo create a new todo
+  """
   createTodo(input: NewTodo!): Todo!
 }

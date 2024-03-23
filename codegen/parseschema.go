@@ -1,6 +1,7 @@
 package codegen
 
 import (
+	"cmp"
 	"log/slog"
 	"slices"
 	"strings"
@@ -9,7 +10,6 @@ import (
 )
 
 func (gen *Generator) parseSchema() error {
-	// TODO: add schema comments to golang functions
 	namedTypes := []string{}
 
 	nt, err := gen.parseFunction(gen.schemas.Query)
@@ -28,11 +28,8 @@ func (gen *Generator) parseSchema() error {
 		}
 	}
 
-	// generate all required types definitions
-	for _, t := range namedTypes {
-		gen.Schema.Types = append(gen.Schema.Types, SchemaType{
-			Name: t,
-		})
+	if err := gen.parseTypes(namedTypes); err != nil {
+		return err
 	}
 
 	return nil
@@ -68,9 +65,10 @@ func (gen *Generator) parseFunction(definition *ast.Definition) ([]string, error
 		}
 
 		schemaFunction := SchemaFunction{
-			Name:      field.Name,
-			QueryType: strings.ToLower(definition.Name),
-			Type:      schemaType,
+			Name:        field.Name,
+			QueryType:   strings.ToLower(definition.Name),
+			Type:        schemaType,
+			Description: field.Description,
 		}
 
 		// add returned type to types
@@ -81,6 +79,11 @@ func (gen *Generator) parseFunction(definition *ast.Definition) ([]string, error
 		slog.Debug("parseFunction", "type", definition.Name, "name", field.Name)
 		gen.Schema.Functions = append(gen.Schema.Functions, schemaFunction)
 	}
+
+	// sort types so generated code stays stable
+	slices.SortFunc(gen.Schema.Functions, func(a, b SchemaFunction) int {
+		return cmp.Compare(strings.ToLower(a.Name), strings.ToLower(b.Name))
+	})
 
 	return namedTypes, nil
 }

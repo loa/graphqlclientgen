@@ -59,13 +59,15 @@ func (suite *SimpleSuite) TestSimpleGetTodos() {
 }
 
 func (suite *SimpleSuite) TestSimpleCreateTodos() {
-	todo, err := suite.client.CreateTodo(context.TODO(), client.NewTodo{
-		Text:   "bar",
-		UserId: "5",
-	}, client.TodoFields{
-		client.TodoFieldID,
-		client.TodoFieldText,
-	})
+	todo, err := suite.client.CreateTodo(context.TODO(),
+		client.NewTodo{
+			Text:   "bar",
+			UserId: "5",
+		},
+		client.TodoFields{
+			client.TodoFieldID,
+			client.TodoFieldText,
+		})
 	if assert.Nil(suite.T(), err) {
 		assert.Equal(suite.T(), todo.Text, "bar", "todo should be same")
 	}

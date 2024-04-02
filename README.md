@@ -14,6 +14,32 @@ This is an experiment of generating GraphQL clients in Golang. It's heavily insp
   - Reuse gqlgen custom scalars
 - Limitations
   - Mostly designed to use GraphQL as standard RPC
-  - Weak support for deep graph fetching
+  - Weak support for deep graph fetching _(can't have multiple fields with same object type)_
   - Only supports scalars and objects
   - Only supports hard-coded basic scalars _(bool, float, id, string, int)_
+
+  ## Examples
+
+  ```golang
+  func Example() {
+    // create client, supports custom protocols through ProtoClient interface
+    c := client.New(graphqlclientgen.NewHttpClient("http://localhost:8080/query"))
+
+    todo, err := c.CreateTodo(context.TODO(),
+      // static typed inputs
+      client.NewTodo{
+        Text:   "bar",
+        UserId: "5",
+      },
+      // explicit requested fields, easy to use with auto-complete
+      client.TodoFields{
+        client.TodoFieldID,
+        client.TodoFieldText,
+        // supports requesting specific fields of related objects
+        client.UserFields{
+          client.UserFieldID,
+          client.UserFieldName,
+        },
+      })
+    }
+  ```

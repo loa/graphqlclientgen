@@ -21,10 +21,14 @@ type SimpleSuite struct {
 	server *httptest.Server
 }
 
+func TestSimpleSuite(t *testing.T) {
+	suite.Run(t, new(SimpleSuite))
+}
+
 func (suite *SimpleSuite) SetupTest() {
 	gsrv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{
 		DB: []*model.Todo{
-			{ID: "0", Text: "foobar"},
+			{ID: "0", Text: "foo"},
 		},
 	}}))
 
@@ -40,12 +44,27 @@ func (suite *SimpleSuite) TearDownTest() {
 	suite.server.Close()
 }
 
-func (suite *SimpleSuite) TestSimpleGetTodos(t *testing.T) {
+func (suite *SimpleSuite) TestSimpleGetTodos() {
 	todos, err := suite.client.Todos(context.TODO())
-
-	if assert.Nil(t, err) {
-		if assert.Equal(t, 1, len(todos), "should exist 1 todo") {
-			assert.Equal(t, todos[0].Text, "foobar", "todo should be same")
+	assert.Nil(suite.T(), err)
+	if assert.Nil(suite.T(), err) {
+		if assert.Equal(suite.T(), 1, len(todos), "should exist 1 todo") {
+			assert.Equal(suite.T(), todos[0].Text, "foo", "todo should be same")
 		}
+	}
+}
+
+func (suite *SimpleSuite) TestSimpleCreateTodos() {
+	todo, err := suite.client.CreateTodo(context.TODO(), client.NewTodo{
+		Text:   "bar",
+		UserId: "5",
+	})
+	if assert.Nil(suite.T(), err) {
+		assert.Equal(suite.T(), todo.Text, "bar", "todo should be same")
+	}
+
+	todos, err := suite.client.Todos(context.TODO())
+	if assert.Nil(suite.T(), err) {
+		assert.Equal(suite.T(), 2, len(todos), "should exist 2 todos")
 	}
 }

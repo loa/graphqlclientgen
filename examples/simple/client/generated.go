@@ -16,6 +16,14 @@ type (
 		protoClient graphqlclientgen.ProtoClient
 	}
 
+	// NewTodo
+	NewTodo struct {
+		// Text todo text
+		Text string `json:"text"`
+		// UserId user to assign todo
+		UserId string `json:"userId"`
+	}
+
 	// Todo entry with text and done status
 	Todo struct {
 		// Done status of todo
@@ -47,9 +55,25 @@ func New(protoClient graphqlclientgen.ProtoClient) Client {
 }
 
 // CreateTodo (mutation) create a new todo
-func (client Client) CreateTodo(ctx context.Context) (Todo, error) {
+func (client Client) CreateTodo(
+	ctx context.Context,
+	input NewTodo,
+) (Todo, error) {
 	body := graphqlclientgen.Body{
-		Query: "mutation { createTodo { id, text } }",
+		Query: `
+        mutation (    
+            $input: NewTodo!,
+        ) {
+            createTodo (    
+                input: $input,
+            ) {
+                id,
+                text,
+            }
+        }`,
+		Variables: map[string]any{
+			"input": input,
+		},
 	}
 
 	var res graphqlclientgen.Response
@@ -73,9 +97,18 @@ func (client Client) CreateTodo(ctx context.Context) (Todo, error) {
 }
 
 // Todos (query) returns all todos
-func (client Client) Todos(ctx context.Context) ([]Todo, error) {
+func (client Client) Todos(
+	ctx context.Context,
+) ([]Todo, error) {
 	body := graphqlclientgen.Body{
-		Query: "query { todos { id, text } }",
+		Query: `
+        query {
+            todos {
+                id,
+                text,
+            }
+        }`,
+		Variables: map[string]any{},
 	}
 
 	var res graphqlclientgen.Response

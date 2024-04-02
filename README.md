@@ -1,6 +1,6 @@
 # graphqlclientgen
 
-_Here Be Dragons_
+_Here Be Dragons_ :dragon:
 
 This is an experiment of generating GraphQL clients in Golang. It's heavily inspired by [gqlgen](https://github.com/99designs/gqlgen).
 

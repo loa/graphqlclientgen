@@ -43,7 +43,8 @@ type (
 		QueryType   string
 		Description string
 
-		Type SchemaType
+		Type      SchemaType
+		Arguments map[string]SchemaType
 	}
 
 	SchemaType struct {

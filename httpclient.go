@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 )
 
@@ -65,10 +64,6 @@ func (httpClient HttpClient) Do(ctx context.Context, in Body, out any) error {
 
 	if err := json.NewDecoder(res.Body).Decode(out); err != nil {
 		return err
-	}
-
-	if res.StatusCode < 200 || 299 < res.StatusCode {
-		return fmt.Errorf("unexpected http status code %d", res.StatusCode)
 	}
 
 	return nil

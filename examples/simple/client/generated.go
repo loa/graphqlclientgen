@@ -6,6 +6,8 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
+	"strings"
 
 	"github.com/loa/graphqlclientgen"
 )
@@ -45,7 +47,51 @@ type (
 		// Todos all todos assigned to user
 		Todos *Todo `json:"todos"`
 	}
+
+	TodoFieldScalar string
+	TodoField       interface {
+		TodoFieldGraphQL() string
+	}
+	TodoFields []TodoField
+
+	UserFieldScalar string
+	UserField       interface {
+		UserFieldGraphQL() string
+	}
+	UserFields []UserField
 )
+
+var (
+	TodoFieldDone TodoFieldScalar = "done"
+	TodoFieldID   TodoFieldScalar = "id"
+	TodoFieldText TodoFieldScalar = "text"
+	UserFieldID   UserFieldScalar = "id"
+	UserFieldName UserFieldScalar = "name"
+)
+
+func (field TodoFieldScalar) TodoFieldGraphQL() string {
+	return string(field)
+}
+
+func (field UserFieldScalar) UserFieldGraphQL() string {
+	return string(field)
+}
+
+func (fields UserFields) TodoFieldGraphQL() string {
+	var s []string
+	for _, field := range fields {
+		s = append(s, field.UserFieldGraphQL())
+	}
+	return fmt.Sprintf("user { %s }", strings.Join(s, ", "))
+}
+
+func (fields TodoFields) UserFieldGraphQL() string {
+	var s []string
+	for _, field := range fields {
+		s = append(s, field.TodoFieldGraphQL())
+	}
+	return fmt.Sprintf("todos { %s }", strings.Join(s, ", "))
+}
 
 // New create new graphqlclient
 func New(protoClient graphqlclientgen.ProtoClient) Client {
@@ -58,19 +104,19 @@ func New(protoClient graphqlclientgen.ProtoClient) Client {
 func (client Client) CreateTodo(
 	ctx context.Context,
 	input NewTodo,
+	fields TodoFields,
 ) (Todo, error) {
+	var s []string
+	for _, field := range fields {
+		s = append(s, field.TodoFieldGraphQL())
+	}
+	fieldsContent := strings.Join(s, ",")
+
 	body := graphqlclientgen.Body{
-		Query: `
-        mutation (    
-            $input: NewTodo!,
-        ) {
-            createTodo (    
-                input: $input,
-            ) {
-                id,
-                text,
-            }
-        }`,
+		Query: fmt.Sprintf(`
+        mutation ($input: NewTodo!) {
+            createTodo (input: $input) { %s }
+        }`, fieldsContent),
 		Variables: map[string]any{
 			"input": input,
 		},
@@ -99,15 +145,19 @@ func (client Client) CreateTodo(
 // Todos (query) returns all todos
 func (client Client) Todos(
 	ctx context.Context,
+	fields TodoFields,
 ) ([]Todo, error) {
+	var s []string
+	for _, field := range fields {
+		s = append(s, field.TodoFieldGraphQL())
+	}
+	fieldsContent := strings.Join(s, ",")
+
 	body := graphqlclientgen.Body{
-		Query: `
+		Query: fmt.Sprintf(`
         query {
-            todos {
-                id,
-                text,
-            }
-        }`,
+            todos { %s }
+        }`, fieldsContent),
 		Variables: map[string]any{},
 	}
 

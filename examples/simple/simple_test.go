@@ -45,7 +45,11 @@ func (suite *SimpleSuite) TearDownTest() {
 }
 
 func (suite *SimpleSuite) TestSimpleGetTodos() {
-	todos, err := suite.client.Todos(context.TODO())
+	todos, err := suite.client.Todos(context.TODO(),
+		client.TodoFields{
+			client.TodoFieldID,
+			client.TodoFieldText,
+		})
 	assert.Nil(suite.T(), err)
 	if assert.Nil(suite.T(), err) {
 		if assert.Equal(suite.T(), 1, len(todos), "should exist 1 todo") {
@@ -58,12 +62,18 @@ func (suite *SimpleSuite) TestSimpleCreateTodos() {
 	todo, err := suite.client.CreateTodo(context.TODO(), client.NewTodo{
 		Text:   "bar",
 		UserId: "5",
+	}, client.TodoFields{
+		client.TodoFieldID,
+		client.TodoFieldText,
 	})
 	if assert.Nil(suite.T(), err) {
 		assert.Equal(suite.T(), todo.Text, "bar", "todo should be same")
 	}
 
-	todos, err := suite.client.Todos(context.TODO())
+	todos, err := suite.client.Todos(context.TODO(), client.TodoFields{
+		client.TodoFieldID,
+		client.TodoFieldText,
+	})
 	if assert.Nil(suite.T(), err) {
 		assert.Equal(suite.T(), 2, len(todos), "should exist 2 todos")
 	}

@@ -1,0 +1,127 @@
+functions:
+    - name: createTodo
+      querytype: mutation
+      description: createTodo create a new todo
+      type:
+        name: Todo
+        nonnull: true
+        description: ""
+        kind: ""
+        list: false
+        listnonnull: false
+        fields: {}
+      arguments:
+        input:
+            name: NewTodo
+            nonnull: true
+            description: ""
+            kind: ""
+            list: false
+            listnonnull: false
+            fields: {}
+    - name: todos
+      querytype: query
+      description: todos returns all todos
+      type:
+        name: Todo
+        nonnull: true
+        description: ""
+        kind: ""
+        list: true
+        listnonnull: true
+        fields: {}
+      arguments: {}
+types:
+    - name: NewTodo
+      nonnull: false
+      description: ""
+      kind: INPUT_OBJECT
+      list: false
+      listnonnull: false
+      fields:
+        text:
+            name: string
+            nonnull: true
+            description: todo text
+            kind: SCALAR
+            list: false
+            listnonnull: false
+            fields: {}
+        userId:
+            name: string
+            nonnull: true
+            description: user to assign todo
+            kind: SCALAR
+            list: false
+            listnonnull: false
+            fields: {}
+    - name: Todo
+      nonnull: false
+      description: Todo entry with text and done status
+      kind: OBJECT
+      list: false
+      listnonnull: false
+      fields:
+        done:
+            name: bool
+            nonnull: true
+            description: done status of todo
+            kind: SCALAR
+            list: false
+            listnonnull: false
+            fields: {}
+        id:
+            name: string
+            nonnull: true
+            description: primary id of todo
+            kind: SCALAR
+            list: false
+            listnonnull: false
+            fields: {}
+        text:
+            name: string
+            nonnull: true
+            description: todo text
+            kind: SCALAR
+            list: false
+            listnonnull: false
+            fields: {}
+        user:
+            name: User
+            nonnull: true
+            description: user assigned to todo
+            kind: OBJECT
+            list: false
+            listnonnull: false
+            fields: {}
+    - name: User
+      nonnull: false
+      description: User with name and assigned todos
+      kind: OBJECT
+      list: false
+      listnonnull: false
+      fields:
+        id:
+            name: string
+            nonnull: true
+            description: primary id of user
+            kind: SCALAR
+            list: false
+            listnonnull: false
+            fields: {}
+        name:
+            name: string
+            nonnull: true
+            description: name of user
+            kind: SCALAR
+            list: false
+            listnonnull: false
+            fields: {}
+        todos:
+            name: Todo
+            nonnull: true
+            description: all todos assigned to user
+            kind: OBJECT
+            list: false
+            listnonnull: false
+            fields: {}

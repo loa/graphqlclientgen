@@ -23,8 +23,11 @@ type (
 	}
 
 	Config struct {
-		Schema []string
-		Client ConfigClient
+		Schema []string     `yaml:"schema"`
+		Client ConfigClient `yaml:"client"`
+
+		SkipGofmt        bool `yaml:"skipGofmt"`
+		CreateSchemaYaml bool `yaml:"createSchemaYaml"`
 	}
 
 	ConfigClient struct {
@@ -119,8 +122,27 @@ func (gen *Generator) Generate() error {
 		return err
 	}
 
-	if err := gofmt(filename); err != nil {
-		return err
+	slog.Debug("config",
+		"SkipGofmt", gen.Config.SkipGofmt,
+		"CreateSchemaYaml", gen.Config.CreateSchemaYaml,
+	)
+	if !gen.Config.SkipGofmt {
+		if err := gofmt(filename); err != nil {
+			return err
+		}
+	}
+
+	if gen.Config.CreateSchemaYaml {
+		filename := filepath.Join(gen.Config.Client.Dir, "generated.yaml")
+		yf, err := os.Create(filename)
+		if err != nil {
+			return err
+		}
+		defer yf.Close()
+
+		if err := yaml.NewEncoder(yf).Encode(gen.Schema); err != nil {
+			return err
+		}
 	}
 
 	return nil

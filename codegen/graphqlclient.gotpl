@@ -6,6 +6,8 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
+	"strings"
 
     "github.com/loa/graphqlclientgen"
 )
@@ -25,7 +27,52 @@ type (
         {{- end }}
     }
 {{ end }}
+{{- range $type := .Schema.Types }}
+{{- if not (eq $type.Kind "INPUT_OBJECT") }}
+    {{ $type.Name | capitalize }}FieldScalar string
+    {{ $type.Name | capitalize }}Field interface {
+        {{ $type.Name | capitalize }}FieldGraphQL() string
+    }
+    {{ $type.Name | capitalize }}Fields []{{ $type.Name | capitalize }}Field
+{{ end -}}
+{{ end }}
 )
+
+var (
+{{- range $type := .Schema.Types }}
+    {{- if not (eq $type.Kind "INPUT_OBJECT") }}
+        {{- range $name, $field := $type.Fields }}
+            {{- if eq $field.Kind "SCALAR" }}
+    {{ $type.Name | capitalize }}Field{{ $name | capitalize | initialism }} {{ $type.Name | capitalize }}FieldScalar = "{{ $name }}"
+            {{- end }}
+        {{- end }}
+    {{- end }}
+{{- end }}
+)
+
+{{ range $type := .Schema.Types }}
+{{- if not (eq $type.Kind "INPUT_OBJECT") }}
+func (field {{ $type.Name | capitalize }}FieldScalar) {{ $type.Name | capitalize }}FieldGraphQL() string {
+	return string(field)
+}
+{{ end }}
+{{ end }}
+
+{{- range $type := .Schema.Types }}
+    {{ if not (eq $type.Kind "INPUT_OBJECT") }}
+        {{- range $name, $field := $type.Fields }}
+            {{- if eq $field.Kind "OBJECT" }}
+func (fields {{ $field.Name }}Fields) {{ $type.Name | capitalize }}FieldGraphQL() string {
+    var s []string
+    for _, field := range fields {
+        s = append(s, field.{{ $field.Name }}FieldGraphQL())
+    }
+    return fmt.Sprintf("{{ $name }} { %s }", strings.Join(s, ", "))
+}
+            {{- end }}
+        {{- end }}
+    {{- end }}
+{{- end }}
 
 // New create new graphqlclient
 func New(protoClient graphqlclientgen.ProtoClient) Client {
@@ -34,34 +81,52 @@ func New(protoClient graphqlclientgen.ProtoClient) Client {
 	}
 }
 
+{{ define "functionArguments" }}
+    ctx context.Context,
+    {{- range $name, $argument := .Arguments }}    
+    {{ $name }} {{ if $argument.List }}[]{{ end }}{{ if not $argument.NonNull }}*{{ end }}{{ $argument.Name }},
+    {{- end }}
+    fields {{ .Type.Name | capitalize }}Fields,
+{{ end }}
+
+{{ define "operationArguments" }}
+    {{- $first := true }}
+    {{- range $name, $argument := . }}    
+        {{- if $first }}
+            {{- $first = false }}
+        {{- else }}
+            ,
+        {{- end -}} 
+        ${{ $name }}: {{ if $argument.List }}[{{ end }}{{ $argument.Name }}{{ if $argument.NonNull }}!{{ end }}{{ if $argument.List }}}{{ end }}{{ if $argument.ListNonNull }}!{{ end }}
+    {{- end -}}
+{{ end }}
+
+{{ define "queryArguments" }}
+    {{- $first := true }}
+    {{- range $name, $argument := . }}
+        {{- if $first }}
+            {{- $first = false }}
+        {{- else }}
+            ,
+        {{- end }} 
+        {{- $name }}: ${{ $name }}
+    {{- end -}}
+{{ end }}
+
 {{- range $fun := .Schema.Functions }}
 // {{ $fun.Name | capitalize }} ({{ $fun.QueryType }}) {{ stripPrefix $fun.Description $fun.Name }}
-func (client Client) {{ $fun.Name | capitalize }}(
-    ctx context.Context,
-{{- range $name, $argument := $fun.Arguments }}    
-    {{ $name }} {{ if $argument.List }}[]{{ end }}{{ if not $argument.NonNull }}*{{ end }}{{ $argument.Name }},
-{{- end}}
-) ({{ if $fun.Type.List }}[]{{ end }}{{ if not $fun.Type.NonNull }}*{{ end }}{{ $fun.Type.Name | capitalize }}, error) {
+func (client Client) {{ $fun.Name | capitalize }}({{ template "functionArguments" $fun }}) ({{ if $fun.Type.List }}[]{{ end }}{{ if not $fun.Type.NonNull }}*{{ end }}{{ $fun.Type.Name | capitalize }}, error) {
+   	var s []string
+	for _, field := range fields {
+		s = append(s, field.{{ $fun.Type.Name | capitalize }}FieldGraphQL())
+	}
+	fieldsContent := strings.Join(s, ",")
+
     body := graphqlclientgen.Body{
-        Query: `
-        {{ $fun.QueryType }}
-        {{- if $fun.Arguments }} (
-        {{- range $name, $argument := $fun.Arguments }}    
-            ${{ $name }}: {{ if $argument.List }}[{{ end }}{{ $argument.Name }}{{ if $argument.NonNull }}!{{ end }}{{ if $argument.List }}}{{ end }}{{ if $argument.ListNonNull }}!{{ end }},
-        {{- end }}
-        )
-        {{- end }} {
-            {{ $fun.Name }}
-        {{- if $fun.Arguments }} (
-        {{- range $name, $argument := $fun.Arguments }}    
-                {{ $name }}: ${{ $name}},
-        {{- end }}
-            )
-        {{- end }} {
-                id,
-                text,
-            }
-        }`,
+        Query: fmt.Sprintf(`
+        {{ $fun.QueryType }} {{ with $fun.Arguments }}({{ template "operationArguments" . }}) {{ end }}{
+            {{ $fun.Name }} {{- with $fun.Arguments }} ({{ template "queryArguments" . }}){{ end }} { %s }
+        }`, fieldsContent),
         Variables: map[string]any{
 {{- range $name, $argument := $fun.Arguments }}    
             "{{ $name }}": {{ $name }},

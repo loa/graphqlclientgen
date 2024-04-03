@@ -136,7 +136,7 @@ func (client Client) CreateTodo(
 	}
 
 	if err := json.Unmarshal(res.Data, &data); err != nil {
-		return data.CreateTodo, nil
+		return data.CreateTodo, err
 	}
 
 	return data.CreateTodo, nil
@@ -175,7 +175,7 @@ func (client Client) Todos(
 	}
 
 	if err := json.Unmarshal(res.Data, &data); err != nil {
-		return data.Todos, nil
+		return data.Todos, err
 	}
 
 	return data.Todos, nil

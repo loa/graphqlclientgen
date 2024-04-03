@@ -161,7 +161,7 @@ func (client Client) {{ $fun.Name | capitalize }}({{ template "functionArguments
 
 	if err := json.Unmarshal(res.Data, &data); err != nil {
         {{- if $fun.Type.NonNull }}
-        return data.{{ $fun.Name | capitalize }}, nil
+        return data.{{ $fun.Name | capitalize }}, err
         {{- else }}
         return nil, err
         {{- end }}

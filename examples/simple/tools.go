@@ -5,5 +5,5 @@ package tools
 
 import (
 	_ "github.com/99designs/gqlgen"
-	_ "github.com/loa/graphqlclientgen"
+	_ "github.com/loa/graphqlclientgen/cmd"
 )

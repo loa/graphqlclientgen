@@ -1,20 +1,34 @@
 package main
 
 import (
-	"log"
+	"context"
 	"os"
 
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
+	"golang.org/x/exp/slog"
 )
 
 func main() {
-	app := &cli.App{
-		Name:   "graphqlclientgen",
-		Usage:  "Generate golang graphql clients",
-		Action: generate,
+	cmd := &cli.Command{
+		Name:  "graphqlclientgen",
+		Usage: "Generate golang graphql clients",
+		Commands: []*cli.Command{
+			{
+				Name: "generate",
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name:     "filename",
+						Category: "config",
+						Value:    "graphqlclientgen.yaml",
+					},
+				},
+				Action: generate,
+			},
+		},
 	}
 
-	if err := app.Run(os.Args); err != nil {
-		log.Fatal(err)
+	if err := cmd.Run(context.Background(), os.Args); err != nil {
+		slog.Error(err.Error())
+		os.Exit(1)
 	}
 }

@@ -5,11 +5,12 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"simple/client"
+	"simple/graph"
+	"simple/graph/model"
+
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/loa/graphqlclientgen"
-	"github.com/loa/graphqlclientgen/examples/simple/client"
-	"github.com/loa/graphqlclientgen/examples/simple/graph"
-	"github.com/loa/graphqlclientgen/examples/simple/graph/model"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )

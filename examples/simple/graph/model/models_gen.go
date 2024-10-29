@@ -6,21 +6,33 @@ type Mutation struct {
 }
 
 type NewTodo struct {
-	Text   string `json:"text"`
+	// todo text
+	Text string `json:"text"`
+	// user to assign todo
 	UserID string `json:"userId"`
 }
 
 type Query struct {
 }
 
+// Todo entry with text and done status
 type Todo struct {
-	ID   string `json:"id"`
+	// primary id of todo
+	ID string `json:"id"`
+	// todo text
 	Text string `json:"text"`
-	Done bool   `json:"done"`
-	User *User  `json:"user"`
+	// done status of todo
+	Done bool `json:"done"`
+	// user assigned to todo
+	User *User `json:"user"`
 }
 
+// User with name and assigned todos
 type User struct {
-	ID   string `json:"id"`
+	// primary id of user
+	ID string `json:"id"`
+	// name of user
 	Name string `json:"name"`
+	// all todos assigned to user
+	Todos []*Todo `json:"todos"`
 }

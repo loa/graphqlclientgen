@@ -142,6 +142,48 @@ func (client Client) CreateTodo(
 	return data.CreateTodo, nil
 }
 
+// TodoById (query) todo get todo by id
+func (client Client) TodoById(
+	ctx context.Context,
+	id string,
+	fields TodoFields,
+) (Todo, error) {
+	var s []string
+	for _, field := range fields {
+		s = append(s, field.TodoFieldGraphQL())
+	}
+	fieldsContent := strings.Join(s, ",")
+
+	body := graphqlclientgen.Body{
+		Query: fmt.Sprintf(`
+        query ($id: ID!) {
+            todoById (id: $id) { %s }
+        }`, fieldsContent),
+		Variables: map[string]any{
+			"id": id,
+		},
+	}
+
+	var res graphqlclientgen.Response
+	if err := client.protoClient.Do(ctx, body, &res); err != nil {
+		return Todo{}, err
+	}
+
+	var data struct {
+		TodoById Todo `json:"todoById"`
+	}
+
+	if len(res.Errors) > 0 {
+		return data.TodoById, errors.New(res.Errors[0].Message)
+	}
+
+	if err := json.Unmarshal(res.Data, &data); err != nil {
+		return data.TodoById, err
+	}
+
+	return data.TodoById, nil
+}
+
 // Todos (query) returns all todos
 func (client Client) Todos(
 	ctx context.Context,

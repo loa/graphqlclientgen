@@ -44,6 +44,10 @@ type User {
 
 type Query {
   """
+  todo get todo by id
+  """
+  todoById(id: ID!): Todo!
+  """
   todos returns all todos
   """
   todos: [Todo!]!

@@ -53,8 +53,14 @@ func (gen *Generator) parseFunctions(definition *ast.Definition) ([]string, erro
 			var argumentType SchemaType
 			if argument.Type.NamedType == "" {
 				namedType = argument.Type.Elem.NamedType
+				goType := namedType
+				if mapping, ok := typeMappings[namedType]; ok {
+					goType = mapping
+				}
+
 				argumentType = SchemaType{
-					Name:    argument.Type.Elem.NamedType,
+					Name:    namedType,
+					Type:    goType,
 					NonNull: argument.Type.Elem.NonNull,
 
 					List:        true,
@@ -62,8 +68,14 @@ func (gen *Generator) parseFunctions(definition *ast.Definition) ([]string, erro
 				}
 			} else {
 				namedType = argument.Type.NamedType
+				goType := namedType
+				if mapping, ok := typeMappings[namedType]; ok {
+					goType = mapping
+				}
+
 				argumentType = SchemaType{
-					Name:    argument.Type.NamedType,
+					Name:    namedType,
+					Type:    goType,
 					NonNull: argument.Type.NonNull,
 				}
 			}

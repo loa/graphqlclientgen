@@ -46,6 +46,7 @@ func (gen *Generator) parseTypes(namedTypes []string) error {
 
 		schemaType := SchemaType{
 			Name:        t.Name,
+			Type:        t.Name,
 			Description: t.Description,
 			Kind:        string(t.Kind),
 			Fields:      map[string]SchemaType{},
@@ -61,6 +62,7 @@ func (gen *Generator) parseTypes(namedTypes []string) error {
 
 				fieldType := SchemaType{
 					Name: name,
+					Type: name,
 					Kind: string(tt.Kind),
 
 					Description: field.Description,

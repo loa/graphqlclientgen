@@ -52,6 +52,7 @@ type (
 
 	SchemaType struct {
 		Name        string
+		Type        string
 		NonNull     bool
 		Description string
 		Kind        string
@@ -94,8 +95,6 @@ func New(filename string) (*Generator, error) {
 }
 
 func (gen *Generator) Generate() error {
-	slog.Info("generating.")
-
 	if err := gen.loadTemplates(); err != nil {
 		return err
 	}

@@ -45,6 +45,18 @@ func (suite *SimpleSuite) TearDownTest() {
 	suite.server.Close()
 }
 
+func (suite *SimpleSuite) TestSimpleGetTodoByID() {
+	todo, err := suite.client.TodoById(context.TODO(), "0", client.TodoFields{
+		client.TodoFieldID,
+		client.TodoFieldText,
+	})
+	assert.Nil(suite.T(), err)
+	if assert.Nil(suite.T(), err) {
+		assert.Equal(suite.T(), "0", todo.ID, "should be equal")
+		assert.Equal(suite.T(), "foo", todo.Text, "should be equal")
+	}
+}
+
 func (suite *SimpleSuite) TestSimpleGetTodos() {
 	todos, err := suite.client.Todos(context.TODO(),
 		client.TodoFields{
@@ -54,7 +66,7 @@ func (suite *SimpleSuite) TestSimpleGetTodos() {
 	assert.Nil(suite.T(), err)
 	if assert.Nil(suite.T(), err) {
 		if assert.Equal(suite.T(), 1, len(todos), "should exist 1 todo") {
-			assert.Equal(suite.T(), todos[0].Text, "foo", "todo should be same")
+			assert.Equal(suite.T(), todos[0].Text, "foo", "should be equal")
 		}
 	}
 }
@@ -70,7 +82,7 @@ func (suite *SimpleSuite) TestSimpleCreateTodos() {
 			client.TodoFieldText,
 		})
 	if assert.Nil(suite.T(), err) {
-		assert.Equal(suite.T(), todo.Text, "bar", "todo should be same")
+		assert.Equal(suite.T(), todo.Text, "bar", "should be equal")
 	}
 
 	todos, err := suite.client.Todos(context.TODO(), client.TodoFields{

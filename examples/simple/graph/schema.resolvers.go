@@ -6,6 +6,7 @@ package graph
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"simple/graph/model"
 )
@@ -21,6 +22,16 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) 
 	r.DB = append(r.DB, &todo)
 
 	return &todo, nil
+}
+
+// TodoByID is the resolver for the todoById field.
+func (r *queryResolver) TodoByID(ctx context.Context, id string) (*model.Todo, error) {
+	for _, todo := range r.DB {
+		if todo.ID == id {
+			return todo, nil
+		}
+	}
+	return nil, errors.New("not found")
 }
 
 // Todos is the resolver for the todos field.

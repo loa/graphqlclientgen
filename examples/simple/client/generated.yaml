@@ -4,6 +4,7 @@ functions:
       description: createTodo create a new todo
       type:
         name: Todo
+        type: ""
         nonnull: true
         description: ""
         kind: ""
@@ -13,6 +14,29 @@ functions:
       arguments:
         input:
             name: NewTodo
+            type: NewTodo
+            nonnull: true
+            description: ""
+            kind: ""
+            list: false
+            listnonnull: false
+            fields: {}
+    - name: todoById
+      querytype: query
+      description: todo get todo by id
+      type:
+        name: Todo
+        type: ""
+        nonnull: true
+        description: ""
+        kind: ""
+        list: false
+        listnonnull: false
+        fields: {}
+      arguments:
+        id:
+            name: ID
+            type: string
             nonnull: true
             description: ""
             kind: ""
@@ -24,6 +48,7 @@ functions:
       description: todos returns all todos
       type:
         name: Todo
+        type: ""
         nonnull: true
         description: ""
         kind: ""
@@ -33,6 +58,7 @@ functions:
       arguments: {}
 types:
     - name: NewTodo
+      type: NewTodo
       nonnull: false
       description: ""
       kind: INPUT_OBJECT
@@ -41,6 +67,7 @@ types:
       fields:
         text:
             name: string
+            type: string
             nonnull: true
             description: todo text
             kind: SCALAR
@@ -49,6 +76,7 @@ types:
             fields: {}
         userId:
             name: string
+            type: string
             nonnull: true
             description: user to assign todo
             kind: SCALAR
@@ -56,6 +84,7 @@ types:
             listnonnull: false
             fields: {}
     - name: Todo
+      type: Todo
       nonnull: false
       description: Todo entry with text and done status
       kind: OBJECT
@@ -64,6 +93,7 @@ types:
       fields:
         done:
             name: bool
+            type: bool
             nonnull: true
             description: done status of todo
             kind: SCALAR
@@ -72,6 +102,7 @@ types:
             fields: {}
         id:
             name: string
+            type: string
             nonnull: true
             description: primary id of todo
             kind: SCALAR
@@ -80,6 +111,7 @@ types:
             fields: {}
         text:
             name: string
+            type: string
             nonnull: true
             description: todo text
             kind: SCALAR
@@ -88,6 +120,7 @@ types:
             fields: {}
         user:
             name: User
+            type: User
             nonnull: true
             description: user assigned to todo
             kind: OBJECT
@@ -95,6 +128,7 @@ types:
             listnonnull: false
             fields: {}
     - name: User
+      type: User
       nonnull: false
       description: User with name and assigned todos
       kind: OBJECT
@@ -103,6 +137,7 @@ types:
       fields:
         id:
             name: string
+            type: string
             nonnull: true
             description: primary id of user
             kind: SCALAR
@@ -111,6 +146,7 @@ types:
             fields: {}
         name:
             name: string
+            type: string
             nonnull: true
             description: name of user
             kind: SCALAR
@@ -119,6 +155,7 @@ types:
             fields: {}
         todos:
             name: Todo
+            type: Todo
             nonnull: true
             description: all todos assigned to user
             kind: OBJECT

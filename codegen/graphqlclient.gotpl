@@ -84,7 +84,7 @@ func New(protoClient graphqlclientgen.ProtoClient) Client {
 {{ define "functionArguments" }}
     ctx context.Context,
     {{- range $name, $argument := .Arguments }}    
-    {{ $name }} {{ if $argument.List }}[]{{ end }}{{ if not $argument.NonNull }}*{{ end }}{{ $argument.Name }},
+    {{ $name }} {{ if $argument.List }}[]{{ end }}{{ if not $argument.NonNull }}*{{ end }}{{ $argument.Type }},
     {{- end }}
     fields {{ .Type.Name | capitalize }}Fields,
 {{ end }}
@@ -115,7 +115,7 @@ func New(protoClient graphqlclientgen.ProtoClient) Client {
 
 {{- range $fun := .Schema.Functions }}
 // {{ $fun.Name | capitalize }} ({{ $fun.QueryType }}) {{ stripPrefix $fun.Description $fun.Name }}
-func (client Client) {{ $fun.Name | capitalize }}({{ template "functionArguments" $fun }}) ({{ if $fun.Type.List }}[]{{ end }}{{ if not $fun.Type.NonNull }}*{{ end }}{{ $fun.Type.Name | capitalize }}, error) {
+func (client Client) {{ $fun.Name | capitalize }}({{ template "functionArguments" $fun }}) ({{ if $fun.Type.List }}[]{{ end }}{{ if not $fun.Type.NonNull }}*{{ end }}{{ $fun.Type.Name }}, error) {
    	var s []string
 	for _, field := range fields {
 		s = append(s, field.{{ $fun.Type.Name | capitalize }}FieldGraphQL())

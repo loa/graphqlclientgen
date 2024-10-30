@@ -21,9 +21,9 @@ functions:
             list: false
             listnonnull: false
             fields: {}
-    - name: todoById
+    - name: todo
       querytype: query
-      description: todo get todo by id
+      description: todo get todo
       type:
         name: Todo
         type: ""
@@ -45,9 +45,44 @@ functions:
             fields: {}
     - name: todos
       querytype: query
-      description: todos returns all todos
+      description: todos get all todos
       type:
         name: Todo
+        type: ""
+        nonnull: true
+        description: ""
+        kind: ""
+        list: true
+        listnonnull: true
+        fields: {}
+      arguments: {}
+    - name: user
+      querytype: query
+      description: ""
+      type:
+        name: User
+        type: ""
+        nonnull: true
+        description: ""
+        kind: ""
+        list: false
+        listnonnull: false
+        fields: {}
+      arguments:
+        id:
+            name: UUID
+            type: uuid.UUID
+            nonnull: true
+            description: ""
+            kind: ""
+            list: false
+            listnonnull: false
+            fields: {}
+    - name: users
+      querytype: query
+      description: ""
+      type:
+        name: User
         type: ""
         nonnull: true
         description: ""
@@ -74,9 +109,9 @@ types:
             list: false
             listnonnull: false
             fields: {}
-        userId:
-            name: string
-            type: string
+        user:
+            name: uuid.UUID
+            type: uuid.UUID
             nonnull: true
             description: user to assign todo
             kind: SCALAR
@@ -136,8 +171,8 @@ types:
       listnonnull: false
       fields:
         id:
-            name: string
-            type: string
+            name: uuid.UUID
+            type: uuid.UUID
             nonnull: true
             description: primary id of user
             kind: SCALAR

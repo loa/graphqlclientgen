@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/google/uuid"
 	"github.com/loa/graphqlclientgen"
 )
 
@@ -22,8 +23,8 @@ type (
 	NewTodo struct {
 		// Text todo text
 		Text string `json:"text"`
-		// UserId user to assign todo
-		UserId string `json:"userId"`
+		// User to assign todo
+		User uuid.UUID `json:"user"`
 	}
 
 	// Todo entry with text and done status
@@ -41,7 +42,7 @@ type (
 	// User with name and assigned todos
 	User struct {
 		// ID primary id of user
-		ID string `json:"id"`
+		ID uuid.UUID `json:"id"`
 		// Name of user
 		Name string `json:"name"`
 		// Todos all todos assigned to user
@@ -142,8 +143,8 @@ func (client Client) CreateTodo(
 	return data.CreateTodo, nil
 }
 
-// TodoById (query) todo get todo by id
-func (client Client) TodoById(
+// Todo (query) get todo
+func (client Client) Todo(
 	ctx context.Context,
 	id string,
 	fields TodoFields,
@@ -157,7 +158,7 @@ func (client Client) TodoById(
 	body := graphqlclientgen.Body{
 		Query: fmt.Sprintf(`
         query ($id: ID!) {
-            todoById (id: $id) { %s }
+            todo (id: $id) { %s }
         }`, fieldsContent),
 		Variables: map[string]any{
 			"id": id,
@@ -170,21 +171,21 @@ func (client Client) TodoById(
 	}
 
 	var data struct {
-		TodoById Todo `json:"todoById"`
+		Todo Todo `json:"todo"`
 	}
 
 	if len(res.Errors) > 0 {
-		return data.TodoById, errors.New(res.Errors[0].Message)
+		return data.Todo, errors.New(res.Errors[0].Message)
 	}
 
 	if err := json.Unmarshal(res.Data, &data); err != nil {
-		return data.TodoById, err
+		return data.Todo, err
 	}
 
-	return data.TodoById, nil
+	return data.Todo, nil
 }
 
-// Todos (query) returns all todos
+// Todos (query) get all todos
 func (client Client) Todos(
 	ctx context.Context,
 	fields TodoFields,
@@ -221,4 +222,85 @@ func (client Client) Todos(
 	}
 
 	return data.Todos, nil
+}
+
+// User (query)
+func (client Client) User(
+	ctx context.Context,
+	id uuid.UUID,
+	fields UserFields,
+) (User, error) {
+	var s []string
+	for _, field := range fields {
+		s = append(s, field.UserFieldGraphQL())
+	}
+	fieldsContent := strings.Join(s, ",")
+
+	body := graphqlclientgen.Body{
+		Query: fmt.Sprintf(`
+        query ($id: UUID!) {
+            user (id: $id) { %s }
+        }`, fieldsContent),
+		Variables: map[string]any{
+			"id": id,
+		},
+	}
+
+	var res graphqlclientgen.Response
+	if err := client.protoClient.Do(ctx, body, &res); err != nil {
+		return User{}, err
+	}
+
+	var data struct {
+		User User `json:"user"`
+	}
+
+	if len(res.Errors) > 0 {
+		return data.User, errors.New(res.Errors[0].Message)
+	}
+
+	if err := json.Unmarshal(res.Data, &data); err != nil {
+		return data.User, err
+	}
+
+	return data.User, nil
+}
+
+// Users (query)
+func (client Client) Users(
+	ctx context.Context,
+	fields UserFields,
+) ([]User, error) {
+	var s []string
+	for _, field := range fields {
+		s = append(s, field.UserFieldGraphQL())
+	}
+	fieldsContent := strings.Join(s, ",")
+
+	body := graphqlclientgen.Body{
+		Query: fmt.Sprintf(`
+        query {
+            users { %s }
+        }`, fieldsContent),
+		Variables: map[string]any{},
+	}
+
+	var res graphqlclientgen.Response
+	if err := client.protoClient.Do(ctx, body, &res); err != nil {
+		return nil, err
+	}
+
+	var data struct {
+		Users []User `json:"users"`
+	}
+
+	if len(res.Errors) > 0 {
+		return data.Users, errors.New(res.Errors[0].Message)
+	}
+
+	if err := json.Unmarshal(res.Data, &data); err != nil {
+		return data.Users, err
+	}
+
+	return data.Users, nil
 }

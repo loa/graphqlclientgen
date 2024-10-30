@@ -16,6 +16,9 @@ var typeMappings = map[string]string{
 	"Int":     "int",
 	"Float":   "float64",
 	"String":  "string",
+
+	// TODO: move out of standard and require import of uuid by config
+	"UUID": "uuid.UUID",
 }
 
 func (gen *Generator) parseTypes(namedTypes []string) error {

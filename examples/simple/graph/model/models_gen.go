@@ -2,6 +2,10 @@
 
 package model
 
+import (
+	"github.com/google/uuid"
+)
+
 type Mutation struct {
 }
 
@@ -9,7 +13,7 @@ type NewTodo struct {
 	// todo text
 	Text string `json:"text"`
 	// user to assign todo
-	UserID string `json:"userId"`
+	User uuid.UUID `json:"user"`
 }
 
 type Query struct {
@@ -25,12 +29,14 @@ type Todo struct {
 	Done bool `json:"done"`
 	// user assigned to todo
 	User *User `json:"user"`
+	// Todo belongs to a User
+	UserID uuid.UUID `json:"-"`
 }
 
 // User with name and assigned todos
 type User struct {
 	// primary id of user
-	ID string `json:"id"`
+	ID uuid.UUID `json:"id"`
 	// name of user
 	Name string `json:"name"`
 	// all todos assigned to user

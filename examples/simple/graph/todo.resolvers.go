@@ -9,24 +9,37 @@ import (
 	"errors"
 	"fmt"
 	"simple/graph/model"
+
+	"github.com/google/uuid"
 )
 
 // CreateTodo is the resolver for the createTodo field.
 func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
-	todo := model.Todo{
-		ID:   fmt.Sprint(r.IncrementalID),
-		Text: input.Text,
+	var userID uuid.UUID
+	for _, user := range r.DB.Users {
+		if user.ID == input.User {
+			userID = user.ID
+		}
 	}
-	r.IncrementalID += 1
+	if userID == uuid.Nil {
+		return nil, errors.New("user not found")
+	}
 
-	r.DB = append(r.DB, &todo)
+	todo := model.Todo{
+		ID:     fmt.Sprint(r.DB.TodosIncrementalID),
+		Text:   input.Text,
+		UserID: userID,
+	}
+	r.DB.TodosIncrementalID += 1
+
+	r.DB.Todos = append(r.DB.Todos, &todo)
 
 	return &todo, nil
 }
 
-// TodoByID is the resolver for the todoById field.
-func (r *queryResolver) TodoByID(ctx context.Context, id string) (*model.Todo, error) {
-	for _, todo := range r.DB {
+// Todo is the resolver for the todo field.
+func (r *queryResolver) Todo(ctx context.Context, id string) (*model.Todo, error) {
+	for _, todo := range r.DB.Todos {
 		if todo.ID == id {
 			return todo, nil
 		}
@@ -36,7 +49,17 @@ func (r *queryResolver) TodoByID(ctx context.Context, id string) (*model.Todo, e
 
 // Todos is the resolver for the todos field.
 func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
-	return r.DB, nil
+	return r.DB.Todos, nil
+}
+
+// User is the resolver for the user field.
+func (r *todoResolver) User(ctx context.Context, obj *model.Todo) (*model.User, error) {
+	for _, user := range r.DB.Users {
+		if user.ID == obj.UserID {
+			return user, nil
+		}
+	}
+	return nil, errors.New("not found")
 }
 
 // Mutation returns MutationResolver implementation.
@@ -45,5 +68,9 @@ func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
+// Todo returns TodoResolver implementation.
+func (r *Resolver) Todo() TodoResolver { return &todoResolver{r} }
+
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
+type todoResolver struct{ *Resolver }

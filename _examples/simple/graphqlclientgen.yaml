@@ -8,3 +8,8 @@ schema:
 client:
   dir: client
   package: client
+
+typeMappings:
+  UUID:
+    name: UUID
+    import: github.com/google/uuid

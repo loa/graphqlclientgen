@@ -11,12 +11,9 @@ This is an experiment of generating GraphQL clients in Golang. It's heavily insp
   - Use static types in client interface to check api compability during build time
   - Use GraphQL comments in Golang type and function definitions
   - Enable field selection in client to partially fetch objects
-  - Reuse gqlgen custom scalars
 - Limitations
   - Mostly designed to use GraphQL as standard RPC
   - Weak support for deep graph fetching _(can't have multiple fields with same object type)_
-  - Only supports scalars and objects
-  - Only supports hard-coded basic scalars _(bool, float, id, string, int)_
 
 ## Get started
 

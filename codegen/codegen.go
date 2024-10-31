@@ -23,8 +23,9 @@ type (
 	}
 
 	Config struct {
-		Schema []string     `yaml:"schema"`
-		Client ConfigClient `yaml:"client"`
+		Schema       []string               `yaml:"schema"`
+		Client       ConfigClient           `yaml:"client"`
+		TypeMappings map[string]TypeMapping `yaml:"typeMappings"`
 
 		SkipGofmt        bool `yaml:"skipGofmt"`
 		CreateSchemaYaml bool `yaml:"createSchemaYaml"`
@@ -33,6 +34,12 @@ type (
 	ConfigClient struct {
 		Dir     string
 		Package string
+	}
+
+	TypeMapping struct {
+		Alias  *string `yaml:"alias"`
+		Import *string `yaml:"import"`
+		Name   string  `yaml:"name"`
 	}
 
 	Schema struct {
@@ -71,13 +78,13 @@ func New(filename string) (*Generator, error) {
 	gen := Generator{
 		Config: Config{
 			Client: ConfigClient{
-				Dir:     "client",
+				Dir:     ".",
 				Package: "client",
 			},
+			TypeMappings: map[string]TypeMapping{},
 		},
 	}
 
-	// TODO: use relative path from config
 	b, err := os.ReadFile(filename)
 	if err != nil {
 		return nil, err
@@ -86,7 +93,21 @@ func New(filename string) (*Generator, error) {
 		return nil, err
 	}
 
-	// TODO: parse graphql files
+	defaultTypeMappings := map[string]string{
+		"Boolean": "bool",
+		"ID":      "string",
+		"Int":     "int",
+		"Float":   "float64",
+		"String":  "string",
+	}
+	for key, value := range defaultTypeMappings {
+		if _, ok := gen.Config.TypeMappings[key]; !ok {
+			gen.Config.TypeMappings[key] = TypeMapping{
+				Name: value,
+			}
+		}
+	}
+
 	if err := gen.loadSchemas(); err != nil {
 		return nil, err
 	}
@@ -103,13 +124,11 @@ func (gen *Generator) Generate() error {
 		return err
 	}
 
-	// TODO: use relative path from config
 	path := filepath.Dir(gen.Config.Client.Dir)
 	if err := os.MkdirAll(path, os.ModePerm); err != nil {
 		return err
 	}
 
-	// TODO: use relative path from config
 	filename := filepath.Join(gen.Config.Client.Dir, "generated.go")
 	f, err := os.Create(filename)
 	if err != nil {
@@ -148,21 +167,20 @@ func (gen *Generator) Generate() error {
 }
 
 func (gen *Generator) loadTemplates() error {
-	tpl := template.New("graphqlclient.gotpl").Funcs(template.FuncMap{
+	tpl := template.New("generated.gotpl").Funcs(template.FuncMap{
 		"capitalize":  capitalize,
 		"initialism":  initialism,
 		"stripPrefix": stripPrefix,
 	})
 
 	var err error
-	gen.templates, err = tpl.ParseFS(tplFiles, "graphqlclient.gotpl")
+	gen.templates, err = tpl.ParseFS(tplFiles, "generated.gotpl")
 	return err
 }
 
 func (gen *Generator) loadSchemas() error {
 	var sources []*ast.Source
 	for _, schemaPath := range gen.Config.Schema {
-		// TODO: use relative path from config
 		filenames, err := filepath.Glob(schemaPath)
 		if err != nil {
 			return err

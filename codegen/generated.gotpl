@@ -9,9 +9,14 @@ import (
 	"fmt"
 	"strings"
 
-    "github.com/google/uuid"
     "github.com/loa/graphqlclientgen"
+    {{- range .Config.TypeMappings }}
+        {{- if .Import }}
+    {{ if .Alias }}{{ .Alias }} {{ end }}"{{ .Import }}"
+        {{- end }}
+    {{- end }}
 )
+
 
 type (
     // Client for graphqlclient

@@ -9,18 +9,6 @@ import (
 	"github.com/vektah/gqlparser/v2/ast"
 )
 
-// TODO: enable custom typeMappings through config
-var typeMappings = map[string]string{
-	"Boolean": "bool",
-	"ID":      "string",
-	"Int":     "int",
-	"Float":   "float64",
-	"String":  "string",
-
-	// TODO: move out of standard and require import of uuid by config
-	"UUID": "uuid.UUID",
-}
-
 func (gen *Generator) parseTypes(namedTypes []string) error {
 	// add field types of function input/return types
 	namedTypes, err := gen.findFieldTypes(namedTypes)
@@ -34,7 +22,7 @@ func (gen *Generator) parseTypes(namedTypes []string) error {
 			continue
 		}
 		// skip types with mappings
-		if _, ok := typeMappings[t.Name]; ok {
+		if _, ok := gen.Config.TypeMappings[t.Name]; ok {
 			continue
 		}
 
@@ -58,9 +46,9 @@ func (gen *Generator) parseTypes(namedTypes []string) error {
 		for _, field := range t.Fields {
 			if tt, ok := gen.schemas.Types[field.Type.Name()]; ok {
 				name := tt.Name
-				// override type name with golang type for types listed in typeMappings
-				if val, ok := typeMappings[name]; ok {
-					name = val
+				// override type name with golang type for types listed in TypeMappings
+				if mapping, ok := gen.Config.TypeMappings[name]; ok {
+					name = typeName(mapping)
 				}
 
 				fieldType := SchemaType{

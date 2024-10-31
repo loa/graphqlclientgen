@@ -54,8 +54,8 @@ func (gen *Generator) parseFunctions(definition *ast.Definition) ([]string, erro
 			if argument.Type.NamedType == "" {
 				namedType = argument.Type.Elem.NamedType
 				goType := namedType
-				if mapping, ok := typeMappings[namedType]; ok {
-					goType = mapping
+				if mapping, ok := gen.Config.TypeMappings[namedType]; ok {
+					goType = typeName(mapping)
 				}
 
 				argumentType = SchemaType{
@@ -69,8 +69,8 @@ func (gen *Generator) parseFunctions(definition *ast.Definition) ([]string, erro
 			} else {
 				namedType = argument.Type.NamedType
 				goType := namedType
-				if mapping, ok := typeMappings[namedType]; ok {
-					goType = mapping
+				if mapping, ok := gen.Config.TypeMappings[namedType]; ok {
+					goType = typeName(mapping)
 				}
 
 				argumentType = SchemaType{

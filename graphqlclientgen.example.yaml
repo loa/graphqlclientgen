@@ -1,15 +1,16 @@
 ---
-skipGofmt: false
-createSchemaYaml: true
+# skipGofmt: false
+# createSchemaYaml: false
 
 schema:
   - graph/*.graphqls
 
 client:
-  dir: client
+  dir: .
   package: client
 
 typeMappings:
   UUID:
+    # alias: foobar
     name: UUID
     import: github.com/google/uuid

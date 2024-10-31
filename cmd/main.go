@@ -22,7 +22,20 @@ func main() {
 						Value:    "graphqlclientgen.yaml",
 					},
 				},
-				Action: generate,
+				Action: actionGenerate,
+			},
+			{
+				Name: "init",
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name: "package-name",
+					},
+					&cli.StringFlag{
+						Name:  "schema-path",
+						Value: "../graph/*.graphqls",
+					},
+				},
+				Action: actionInit,
 			},
 		},
 	}

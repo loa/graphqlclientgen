@@ -1,0 +1,70 @@
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	"path/filepath"
+	"text/template"
+
+	"github.com/urfave/cli/v3"
+	"gopkg.in/yaml.v3"
+)
+
+var (
+	tmplContent = "package {{ . }}\n\n//go:generate go run github.com/loa/graphqlclientgen/cmd generate\n"
+)
+
+func actionInit(ctx context.Context, c *cli.Command) error {
+	packageName := c.String("package-name")
+	if len(packageName) < 1 {
+		// take current directory name, if packageName is empty
+		path, err := os.Getwd()
+		if err != nil {
+			return err
+		}
+		packageName = filepath.Base(path)
+	}
+
+	{
+		f, err := os.Create("graphqlclientgen.yaml")
+		if err != nil {
+			return err
+		}
+		defer f.Close()
+
+		config := struct {
+			Schema []string
+			Client map[string]string
+		}{
+			Schema: []string{c.String("schema-path")},
+			Client: map[string]string{
+				"dir":     ".",
+				"package": packageName,
+			},
+		}
+
+		if err := yaml.NewEncoder(f).Encode(config); err != nil {
+			return err
+		}
+	}
+
+	{
+		f, err := os.Create(fmt.Sprintf("%s.go", packageName))
+		if err != nil {
+			return err
+		}
+		defer f.Close()
+
+		tmpl, err := template.New("").Parse(tmplContent)
+		if err != nil {
+			return err
+		}
+
+		if err := tmpl.Execute(f, packageName); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}

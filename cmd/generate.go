@@ -10,7 +10,7 @@ import (
 	"github.com/urfave/cli/v3"
 )
 
-func generate(ctx context.Context, c *cli.Command) error {
+func actionGenerate(ctx context.Context, c *cli.Command) error {
 	dir, err := findConfigDir(c.String("filename"))
 	if err != nil {
 		return err

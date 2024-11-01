@@ -1,0 +1,10 @@
+---
+skipGofmt: false
+createSchemaYaml: true
+
+schema:
+  - graph/*.graphqls
+
+client:
+  dir: client
+  package: client

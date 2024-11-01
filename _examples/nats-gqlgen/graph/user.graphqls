@@ -1,0 +1,22 @@
+"""
+User with name and assigned todos
+"""
+type User {
+  """
+  primary id of user
+  """
+  id: UUID!
+  """
+  name of user
+  """
+  name: String!
+  """
+  all todos assigned to user
+  """
+  todos: [Todo!]! @goField(forceResolver: true)
+}
+
+extend type Query {
+  user(id: UUID!): User!
+  users: [User!]!
+}

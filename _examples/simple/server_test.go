@@ -6,6 +6,7 @@ import (
 	"math/rand/v2"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"simple/client"
 	"simple/graph"
@@ -71,10 +72,13 @@ func (suite *SimpleSuite) TearDownTest() {
 	suite.server.Close()
 }
 
-func (suite *SimpleSuite) TestSimpleGetTodoByID() {
+func (suite *SimpleSuite) TestGetTodoByID() {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
 	expected := suite.db.Todos[rand.IntN(suite.db.TodosIncrementalID)]
 
-	todo, err := suite.client.Todo(context.TODO(), expected.ID, client.TodoFields{
+	todo, err := suite.client.Todo(ctx, expected.ID, client.TodoFields{
 		client.TodoFieldID,
 		client.TodoFieldText,
 	})
@@ -85,8 +89,23 @@ func (suite *SimpleSuite) TestSimpleGetTodoByID() {
 	}
 }
 
-func (suite *SimpleSuite) TestSimpleGetTodos() {
-	todos, err := suite.client.Todos(context.TODO(),
+func (suite *SimpleSuite) TestGetTodoByIDNotFound() {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	_, err := suite.client.Todo(ctx, fmt.Sprint(suite.db.TodosIncrementalID+100), client.TodoFields{
+		client.TodoFieldID,
+		client.TodoFieldText,
+	})
+
+	assert.EqualError(suite.T(), err, "not found")
+}
+
+func (suite *SimpleSuite) TestGetTodos() {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	todos, err := suite.client.Todos(ctx,
 		client.TodoFields{
 			client.TodoFieldID,
 			client.TodoFieldText,
@@ -97,10 +116,13 @@ func (suite *SimpleSuite) TestSimpleGetTodos() {
 	}
 }
 
-func (suite *SimpleSuite) TestSimpleCreateTodos() {
+func (suite *SimpleSuite) TestCreateTodos() {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
 	expectedLen := len(suite.db.Todos) + 1
 
-	todo, err := suite.client.CreateTodo(context.TODO(),
+	todo, err := suite.client.CreateTodo(ctx,
 		client.NewTodo{
 			Text: "New todo!",
 			User: suite.db.Users[0].ID,

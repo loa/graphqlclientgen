@@ -1,6 +1,7 @@
 package natsproto
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -108,7 +109,10 @@ func (server *Server) HandleFunc(msg *nats.Msg) {
 		End:   graphql.Now(),
 	}
 
-	if err := json.Unmarshal(msg.Data, &params); err != nil {
+	dec := json.NewDecoder(bytes.NewReader(msg.Data))
+	dec.UseNumber()
+
+	if err := dec.Decode(&params); err != nil {
 		gqlErr := gqlerror.Errorf(
 			"msg json body could not be decoded: %+v body:%s",
 			err,

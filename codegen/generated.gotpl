@@ -164,10 +164,14 @@ func (client Client) {{ $fun.Name | capitalize }}({{ template "functionArguments
     }
 
     if len(res.Errors) > 0 {
+        var err error
+        for _, e := range res.Errors {
+            err = errors.Join(err, errors.New(e.Message))
+        }
         {{- if $fun.Type.NonNull }}
-        return data.{{ $fun.Name | capitalize }}, errors.New(res.Errors[0].Message)
+        return data.{{ $fun.Name | capitalize }}, err
         {{- else }}
-        return nil, errors.New(res.Errors[0].Message)
+        return nil, err
         {{- end }}
     }
 

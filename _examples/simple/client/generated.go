@@ -135,7 +135,11 @@ func (client Client) CreateTodo(
 	}
 
 	if len(res.Errors) > 0 {
-		return data.CreateTodo, errors.New(res.Errors[0].Message)
+		var err error
+		for _, e := range res.Errors {
+			err = errors.Join(err, errors.New(e.Message))
+		}
+		return data.CreateTodo, err
 	}
 
 	if err := json.Unmarshal(res.Data, &data); err != nil {
@@ -177,7 +181,11 @@ func (client Client) Todo(
 	}
 
 	if len(res.Errors) > 0 {
-		return data.Todo, errors.New(res.Errors[0].Message)
+		var err error
+		for _, e := range res.Errors {
+			err = errors.Join(err, errors.New(e.Message))
+		}
+		return data.Todo, err
 	}
 
 	if err := json.Unmarshal(res.Data, &data); err != nil {
@@ -216,7 +224,11 @@ func (client Client) Todos(
 	}
 
 	if len(res.Errors) > 0 {
-		return data.Todos, errors.New(res.Errors[0].Message)
+		var err error
+		for _, e := range res.Errors {
+			err = errors.Join(err, errors.New(e.Message))
+		}
+		return data.Todos, err
 	}
 
 	if err := json.Unmarshal(res.Data, &data); err != nil {
@@ -258,7 +270,11 @@ func (client Client) User(
 	}
 
 	if len(res.Errors) > 0 {
-		return data.User, errors.New(res.Errors[0].Message)
+		var err error
+		for _, e := range res.Errors {
+			err = errors.Join(err, errors.New(e.Message))
+		}
+		return data.User, err
 	}
 
 	if err := json.Unmarshal(res.Data, &data); err != nil {
@@ -297,7 +313,11 @@ func (client Client) Users(
 	}
 
 	if len(res.Errors) > 0 {
-		return data.Users, errors.New(res.Errors[0].Message)
+		var err error
+		for _, e := range res.Errors {
+			err = errors.Join(err, errors.New(e.Message))
+		}
+		return data.Users, err
 	}
 
 	if err := json.Unmarshal(res.Data, &data); err != nil {

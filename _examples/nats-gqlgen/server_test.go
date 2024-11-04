@@ -169,7 +169,7 @@ func (suite *NatsGqlGenSuite) TestCreateTodos() {
 		client.TodoFields{
 			client.TodoFieldID,
 			client.TodoFieldText,
-			client.UserFields{
+			client.TodoFieldUser{
 				client.UserFieldID,
 				client.UserFieldName,
 			},

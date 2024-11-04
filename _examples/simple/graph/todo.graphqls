@@ -20,7 +20,7 @@ type Todo {
   user: User! @goField(forceResolver: true)
 }
 
-type Query {
+extend type Query {
   """
   todo get todo
   """
@@ -42,7 +42,7 @@ input NewTodo {
   user: UUID!
 }
 
-type Mutation {
+extend type Mutation {
   """
   createTodo create a new todo
   """

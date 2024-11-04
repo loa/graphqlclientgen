@@ -53,13 +53,15 @@ type (
 	TodoField       interface {
 		TodoFieldGraphQL() string
 	}
-	TodoFields []TodoField
+	TodoFields    []TodoField
+	TodoFieldUser []UserField
 
 	UserFieldScalar string
 	UserField       interface {
 		UserFieldGraphQL() string
 	}
-	UserFields []UserField
+	UserFields     []UserField
+	UserFieldTodos []TodoField
 )
 
 var (
@@ -78,7 +80,7 @@ func (field UserFieldScalar) UserFieldGraphQL() string {
 	return string(field)
 }
 
-func (fields UserFields) TodoFieldGraphQL() string {
+func (fields TodoFieldUser) TodoFieldGraphQL() string {
 	var s []string
 	for _, field := range fields {
 		s = append(s, field.UserFieldGraphQL())
@@ -86,7 +88,7 @@ func (fields UserFields) TodoFieldGraphQL() string {
 	return fmt.Sprintf("user { %s }", strings.Join(s, ", "))
 }
 
-func (fields TodoFields) UserFieldGraphQL() string {
+func (fields UserFieldTodos) UserFieldGraphQL() string {
 	var s []string
 	for _, field := range fields {
 		s = append(s, field.TodoFieldGraphQL())

@@ -9,11 +9,9 @@ This is an experiment of generating GraphQL clients in Golang. It's heavily insp
   - Single client generated for entire schema
   - ProtoClient interface to support multiple protocols and custom clients
   - Use static types in client interface to check api compability during build time
-  - Use GraphQL comments in Golang type and function definitions
   - Enable field selection in client to partially fetch objects
 - Limitations
-  - Mostly designed to use GraphQL as standard RPC
-  - Weak support for deep graph fetching _(can't have multiple fields with same object type)_
+  - No support for arguments on fields _(yet)_
 
 ## Get started
 
@@ -61,7 +59,7 @@ func Example() {
       client.TodoFieldID,
       client.TodoFieldText,
       // supports requesting specific fields of related objects
-      client.UserFields{
+      client.TodoFieldUser{
         client.UserFieldID,
         client.UserFieldName,
       },

@@ -96,6 +96,9 @@ func (suite *SimpleSuite) TestGetTodoByIDNotFound() {
 	_, err := suite.client.Todo(ctx, fmt.Sprint(suite.db.TodosIncrementalID+100), client.TodoFields{
 		client.TodoFieldID,
 		client.TodoFieldText,
+		client.TodoFieldUser{
+			client.UserFieldID,
+		},
 	})
 
 	assert.EqualError(suite.T(), err, "not found")
@@ -139,7 +142,7 @@ func (suite *SimpleSuite) TestCreateTodos() {
 	todos, err := suite.client.Todos(context.TODO(), client.TodoFields{
 		client.TodoFieldID,
 		client.TodoFieldText,
-		client.UserFields{
+		client.TodoFieldUser{
 			client.UserFieldID,
 			client.UserFieldName,
 		},

@@ -40,6 +40,12 @@ type (
         {{ $type.Name | capitalize }}FieldGraphQL() string
     }
     {{ $type.Name | capitalize }}Fields []{{ $type.Name | capitalize }}Field
+
+    {{- range $name, $field := $type.Fields }}
+        {{- if eq $field.Kind "OBJECT" }}
+    {{ $type.Name | capitalize }}Field{{ $name | capitalize | initialism }} []{{ $field.Type }}Field
+        {{- end }}
+    {{- end }}
 {{ end -}}
 {{ end }}
 )
@@ -68,7 +74,7 @@ func (field {{ $type.Name | capitalize }}FieldScalar) {{ $type.Name | capitalize
     {{ if not (eq $type.Kind "INPUT_OBJECT") }}
         {{- range $name, $field := $type.Fields }}
             {{- if eq $field.Kind "OBJECT" }}
-func (fields {{ $field.Name }}Fields) {{ $type.Name | capitalize }}FieldGraphQL() string {
+func (fields {{ $type.Name }}Field{{ $name | capitalize }}) {{ $type.Name | capitalize }}FieldGraphQL() string {
     var s []string
     for _, field := range fields {
         s = append(s, field.{{ $field.Name }}FieldGraphQL())

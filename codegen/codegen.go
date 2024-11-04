@@ -20,6 +20,8 @@ type (
 
 		templates *template.Template
 		schemas   *ast.Schema
+
+		configLocationPath string
 	}
 
 	Config struct {
@@ -74,8 +76,9 @@ type (
 //go:embed *.gotpl
 var tplFiles embed.FS
 
-func New(filename string) (*Generator, error) {
+func New(configLocationPath, filename string) (*Generator, error) {
 	gen := Generator{
+		configLocationPath: configLocationPath,
 		Config: Config{
 			Client: ConfigClient{
 				Dir:     ".",
@@ -85,7 +88,8 @@ func New(filename string) (*Generator, error) {
 		},
 	}
 
-	b, err := os.ReadFile(filename)
+	configPath := filepath.Join(configLocationPath, filename)
+	b, err := os.ReadFile(configPath)
 	if err != nil {
 		return nil, err
 	}
@@ -124,12 +128,12 @@ func (gen *Generator) Generate() error {
 		return err
 	}
 
-	path := filepath.Dir(gen.Config.Client.Dir)
+	path := filepath.Join(gen.configLocationPath, gen.Config.Client.Dir)
 	if err := os.MkdirAll(path, os.ModePerm); err != nil {
 		return err
 	}
 
-	filename := filepath.Join(gen.Config.Client.Dir, "generated.go")
+	filename := filepath.Join(gen.configLocationPath, gen.Config.Client.Dir, "generated.go")
 	f, err := os.Create(filename)
 	if err != nil {
 		return err
@@ -151,7 +155,7 @@ func (gen *Generator) Generate() error {
 	}
 
 	if gen.Config.CreateSchemaYaml {
-		filename := filepath.Join(gen.Config.Client.Dir, "generated.yaml")
+		filename := filepath.Join(gen.configLocationPath, gen.Config.Client.Dir, "generated.yaml")
 		yf, err := os.Create(filename)
 		if err != nil {
 			return err
@@ -181,7 +185,7 @@ func (gen *Generator) loadTemplates() error {
 func (gen *Generator) loadSchemas() error {
 	var sources []*ast.Source
 	for _, schemaPath := range gen.Config.Schema {
-		filenames, err := filepath.Glob(schemaPath)
+		filenames, err := filepath.Glob(filepath.Join(gen.configLocationPath, schemaPath))
 		if err != nil {
 			return err
 		}

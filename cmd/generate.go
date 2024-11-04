@@ -11,17 +11,12 @@ import (
 )
 
 func actionGenerate(ctx context.Context, c *cli.Command) error {
-	dir, err := findConfigDir(c.String("filename"))
+	configDir, err := findConfigDir(c.String("filename"))
 	if err != nil {
 		return err
 	}
 
-	// change working directory to same as config file
-	if err := os.Chdir(dir); err != nil {
-		return err
-	}
-
-	generator, err := codegen.New(c.String("filename"))
+	generator, err := codegen.New(configDir, c.String("filename"))
 	if err != nil {
 		return err
 	}
@@ -31,7 +26,11 @@ func actionGenerate(ctx context.Context, c *cli.Command) error {
 
 func findConfigDir(filename string) (string, error) {
 	// check if user specified abs/relative path to configfile
-	if _, err := os.Stat(filename); err == nil {
+	if f, err := os.Stat(filename); err == nil {
+		if f.Mode().IsDir() {
+			return "", fmt.Errorf("%s is not a file", filename)
+		}
+
 		file, err := filepath.Abs(filename)
 		if err != nil {
 			return "", err

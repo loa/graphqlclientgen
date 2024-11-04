@@ -5,8 +5,8 @@ go 1.23.0
 require (
 	github.com/99designs/gqlgen v0.17.55
 	github.com/google/uuid v1.6.0
-	github.com/loa/graphqlclientgen v0.4.0
-	github.com/loa/graphqlclientgen/natsproto v0.0.0-00010101000000-000000000000
+	github.com/loa/graphqlclientgen v0.7.0
+	github.com/loa/graphqlclientgen/natsproto v0.5.0
 	github.com/nats-io/nats-server/v2 v2.10.22
 	github.com/nats-io/nats.go v1.37.0
 	github.com/oklog/run v1.1.0

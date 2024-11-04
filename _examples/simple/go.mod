@@ -5,7 +5,7 @@ go 1.23.0
 require (
 	github.com/99designs/gqlgen v0.17.55
 	github.com/google/uuid v1.6.0
-	github.com/loa/graphqlclientgen v0.3.0
+	github.com/loa/graphqlclientgen v0.7.0
 	github.com/stretchr/testify v1.9.0
 	github.com/vektah/gqlparser/v2 v2.5.18
 )

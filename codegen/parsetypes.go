@@ -44,20 +44,41 @@ func (gen *Generator) parseTypes(namedTypes []string) error {
 		}
 
 		for _, field := range t.Fields {
-			if tt, ok := gen.schemas.Types[field.Type.Name()]; ok {
-				name := tt.Name
-				// override type name with golang type for types listed in TypeMappings
-				if mapping, ok := gen.Config.TypeMappings[name]; ok {
-					name = typeName(mapping)
-				}
+			name := field.Type.Name()
+			if tt, ok := gen.schemas.Types[name]; ok {
+				var namedType string
+				var fieldType SchemaType
+				if field.Type.NamedType == "" {
+					namedType = field.Type.Elem.NamedType
+					goType := namedType
+					if mapping, ok := gen.Config.TypeMappings[namedType]; ok {
+						goType = typeName(mapping)
+					}
 
-				fieldType := SchemaType{
-					Name: name,
-					Type: name,
-					Kind: string(tt.Kind),
+					fieldType = SchemaType{
+						Name:        namedType,
+						Type:        goType,
+						Kind:        string(tt.Kind),
+						NonNull:     field.Type.Elem.NonNull,
+						Description: field.Description,
 
-					Description: field.Description,
-					NonNull:     field.Type.NonNull,
+						List:        true,
+						ListNonNull: field.Type.NonNull,
+					}
+				} else {
+					namedType = field.Type.NamedType
+					goType := namedType
+					if mapping, ok := gen.Config.TypeMappings[namedType]; ok {
+						goType = typeName(mapping)
+					}
+
+					fieldType = SchemaType{
+						Name:        namedType,
+						Type:        goType,
+						Kind:        string(tt.Kind),
+						Description: field.Description,
+						NonNull:     field.Type.NonNull,
+					}
 				}
 
 				schemaType.Fields[field.Name] = fieldType

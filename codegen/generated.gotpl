@@ -29,7 +29,7 @@ type (
     {{ $type.Name | capitalize }} struct {
         {{- range $name, $field := $type.Fields }}
             // {{ $name | capitalize | initialism }} {{ stripPrefix $field.Description $name }}
-            {{ $name | capitalize | initialism }} {{ if $field.List }}[]{{ end }}{{ if or (not $field.NonNull) (eq $field.Kind "OBJECT") }}*{{ end }}{{ $field.Name }} `json:"{{ $name }}"`
+            {{ $name | capitalize | initialism }} {{ if $field.List }}[]{{ end }}{{ if or (not $field.NonNull) (eq $field.Kind "OBJECT") }}*{{ end }}{{ $field.Type }} `json:"{{ $name }}"`
         {{- end }}
     }
 {{ end }}
@@ -95,7 +95,7 @@ func New(protoClient graphqlclientgen.ProtoClient) Client {
 
 {{ define "functionArguments" }}
     ctx context.Context,
-    {{- range $name, $argument := .Arguments }}    
+    {{- range $name, $argument := .Arguments }}
     {{ $name }} {{ if $argument.List }}[]{{ end }}{{ if not $argument.NonNull }}*{{ end }}{{ $argument.Type }},
     {{- end }}
     fields {{ .Type.Name | capitalize }}Fields,
@@ -103,12 +103,12 @@ func New(protoClient graphqlclientgen.ProtoClient) Client {
 
 {{ define "operationArguments" }}
     {{- $first := true }}
-    {{- range $name, $argument := . }}    
+    {{- range $name, $argument := . }}
         {{- if $first }}
             {{- $first = false }}
         {{- else }}
             ,
-        {{- end -}} 
+        {{- end -}}
         ${{ $name }}: {{ if $argument.List }}[{{ end }}{{ $argument.Name }}{{ if $argument.NonNull }}!{{ end }}{{ if $argument.List }}}{{ end }}{{ if $argument.ListNonNull }}!{{ end }}
     {{- end -}}
 {{ end }}
@@ -120,7 +120,7 @@ func New(protoClient graphqlclientgen.ProtoClient) Client {
             {{- $first = false }}
         {{- else }}
             ,
-        {{- end }} 
+        {{- end }}
         {{- $name }}: ${{ $name }}
     {{- end -}}
 {{ end }}
@@ -140,7 +140,7 @@ func (client Client) {{ $fun.Name | capitalize }}({{ template "functionArguments
             {{ $fun.Name }} {{- with $fun.Arguments }} ({{ template "queryArguments" . }}){{ end }} { %s }
         }`, fieldsContent),
         Variables: map[string]any{
-{{- range $name, $argument := $fun.Arguments }}    
+{{- range $name, $argument := $fun.Arguments }}
             "{{ $name }}": {{ $name }},
 {{- end }}
         },

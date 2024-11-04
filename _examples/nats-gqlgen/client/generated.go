@@ -46,7 +46,7 @@ type (
 		// Name of user
 		Name string `json:"name"`
 		// Todos all todos assigned to user
-		Todos *Todo `json:"todos"`
+		Todos []*Todo `json:"todos"`
 	}
 
 	TodoFieldScalar string

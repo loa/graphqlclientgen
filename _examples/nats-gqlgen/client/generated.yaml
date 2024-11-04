@@ -101,7 +101,7 @@ types:
       listnonnull: false
       fields:
         text:
-            name: string
+            name: String
             type: string
             nonnull: true
             description: todo text
@@ -110,7 +110,7 @@ types:
             listnonnull: false
             fields: {}
         user:
-            name: uuid.UUID
+            name: UUID
             type: uuid.UUID
             nonnull: true
             description: user to assign todo
@@ -127,7 +127,7 @@ types:
       listnonnull: false
       fields:
         done:
-            name: bool
+            name: Boolean
             type: bool
             nonnull: true
             description: done status of todo
@@ -136,7 +136,7 @@ types:
             listnonnull: false
             fields: {}
         id:
-            name: string
+            name: ID
             type: string
             nonnull: true
             description: primary id of todo
@@ -145,7 +145,7 @@ types:
             listnonnull: false
             fields: {}
         text:
-            name: string
+            name: String
             type: string
             nonnull: true
             description: todo text
@@ -171,7 +171,7 @@ types:
       listnonnull: false
       fields:
         id:
-            name: uuid.UUID
+            name: UUID
             type: uuid.UUID
             nonnull: true
             description: primary id of user
@@ -180,7 +180,7 @@ types:
             listnonnull: false
             fields: {}
         name:
-            name: string
+            name: String
             type: string
             nonnull: true
             description: name of user
@@ -194,6 +194,6 @@ types:
             nonnull: true
             description: all todos assigned to user
             kind: OBJECT
-            list: false
-            listnonnull: false
+            list: true
+            listnonnull: true
             fields: {}

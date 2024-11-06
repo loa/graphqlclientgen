@@ -1,0 +1,5 @@
+schema:
+    - ../graph/*.graphqls
+client:
+    dir: .
+    package: client

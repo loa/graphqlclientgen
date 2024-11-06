@@ -1,0 +1,14 @@
+type Output {
+    input: String!
+}
+
+type OutputNillable {
+    input: String
+}
+
+type Query {
+    simple: Output!
+    simpleNillable: Output
+    simpleArgument(input: String!): Output!
+    simpleArgumentNillable(input: String): OutputNillable!
+}

@@ -12,6 +12,24 @@ func main() {
 	cmd := &cli.Command{
 		Name:  "graphqlclientgen",
 		Usage: "Generate golang graphql clients",
+		Flags: []cli.Flag{
+			&cli.BoolFlag{
+				Name:  "verbose",
+				Usage: "verbose logs",
+				Value: false,
+			},
+		},
+		Before: func(ctx context.Context, c *cli.Command) error {
+			var logLevel = new(slog.LevelVar)
+			if c.Bool("verbose") {
+				logLevel.Set(slog.LevelDebug)
+			}
+			logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
+				Level: logLevel,
+			}))
+			slog.SetDefault(logger)
+			return nil
+		},
 		Commands: []*cli.Command{
 			{
 				Name: "generate",

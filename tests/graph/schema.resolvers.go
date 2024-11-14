@@ -30,6 +30,16 @@ func (r *queryResolver) SimpleArgumentNillable(ctx context.Context, input *strin
 	return &model.OutputNillable{Input: input}, nil
 }
 
+// ReturnScalar is the resolver for the returnScalar field.
+func (r *queryResolver) ReturnScalar(ctx context.Context, input bool) (bool, error) {
+	return input, nil
+}
+
+// ReturnScalarNillable is the resolver for the returnScalarNillable field.
+func (r *queryResolver) ReturnScalarNillable(ctx context.Context, input *bool) (*bool, error) {
+	return input, nil
+}
+
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 

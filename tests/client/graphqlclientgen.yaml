@@ -1,3 +1,5 @@
+createSchemaYaml: true
+
 schema:
     - ../graph/*.graphqls
 client:

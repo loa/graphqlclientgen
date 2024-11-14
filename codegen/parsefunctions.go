@@ -25,8 +25,17 @@ func (gen *Generator) parseFunctions(definition *ast.Definition) ([]string, erro
 		var schemaType SchemaType
 		if field.Type.NamedType == "" {
 			namedType = field.Type.Elem.NamedType
+			goType := namedType
+			kind := "OBJECT"
+			if mapping, ok := gen.Config.TypeMappings[namedType]; ok {
+				goType = typeName(mapping)
+				kind = "SCALAR"
+			}
+
 			schemaType = SchemaType{
 				Name:    field.Type.Elem.NamedType,
+				Type:    goType,
+				Kind:    kind,
 				NonNull: field.Type.Elem.NonNull,
 
 				List:        true,
@@ -34,8 +43,17 @@ func (gen *Generator) parseFunctions(definition *ast.Definition) ([]string, erro
 			}
 		} else {
 			namedType = field.Type.NamedType
+			goType := namedType
+			kind := "OBJECT"
+			if mapping, ok := gen.Config.TypeMappings[namedType]; ok {
+				goType = typeName(mapping)
+				kind = "SCALAR"
+			}
+
 			schemaType = SchemaType{
 				Name:    field.Type.NamedType,
+				Type:    goType,
+				Kind:    kind,
 				NonNull: field.Type.NonNull,
 			}
 		}
@@ -54,13 +72,16 @@ func (gen *Generator) parseFunctions(definition *ast.Definition) ([]string, erro
 			if argument.Type.NamedType == "" {
 				namedType = argument.Type.Elem.NamedType
 				goType := namedType
+				kind := "OBJECT"
 				if mapping, ok := gen.Config.TypeMappings[namedType]; ok {
 					goType = typeName(mapping)
+					kind = "SCALAR"
 				}
 
 				argumentType = SchemaType{
 					Name:    namedType,
 					Type:    goType,
+					Kind:    kind,
 					NonNull: argument.Type.Elem.NonNull,
 
 					List:        true,
@@ -69,13 +90,16 @@ func (gen *Generator) parseFunctions(definition *ast.Definition) ([]string, erro
 			} else {
 				namedType = argument.Type.NamedType
 				goType := namedType
+				kind := "OBJECT"
 				if mapping, ok := gen.Config.TypeMappings[namedType]; ok {
 					goType = typeName(mapping)
+					kind = "SCALAR"
 				}
 
 				argumentType = SchemaType{
 					Name:    namedType,
 					Type:    goType,
+					Kind:    kind,
 					NonNull: argument.Type.NonNull,
 				}
 			}

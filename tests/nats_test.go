@@ -2,6 +2,7 @@ package tests
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	"github.com/loa/graphqlclientgen/tests/client"
@@ -65,6 +66,39 @@ func TestNatsSimpleArgumentNillable(t *testing.T) {
 
 			require.Nil(t, err)
 			require.Equal(t, test, simple.Input)
+		})
+	}
+}
+
+func TestNatsReturnScalar(t *testing.T) {
+	c, teardown := setupGraph(t)
+	defer teardown()
+
+	tests := []bool{true, false}
+
+	for _, test := range tests {
+		t.Run(fmt.Sprint(test), func(t *testing.T) {
+			actual, err := c.ReturnScalar(context.TODO(), test)
+
+			require.Nil(t, err)
+			require.Equal(t, test, actual)
+		})
+	}
+}
+
+func TestNatsReturnScalarNillable(t *testing.T) {
+	c, teardown := setupGraph(t)
+	defer teardown()
+
+	test1, test2 := true, false
+	tests := []*bool{&test1, &test2, nil}
+
+	for _, test := range tests {
+		t.Run(boolPointerValue(test), func(t *testing.T) {
+			actual, err := c.ReturnScalarNillable(context.TODO(), test)
+
+			require.Nil(t, err)
+			require.Equal(t, test, actual)
 		})
 	}
 }

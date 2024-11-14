@@ -1,0 +1,150 @@
+functions:
+    - name: returnScalar
+      querytype: query
+      description: ""
+      type:
+        name: Boolean
+        type: bool
+        nonnull: true
+        description: ""
+        kind: SCALAR
+        list: false
+        listnonnull: false
+        fields: {}
+      arguments:
+        input:
+            name: Boolean
+            type: bool
+            nonnull: true
+            description: ""
+            kind: SCALAR
+            list: false
+            listnonnull: false
+            fields: {}
+    - name: returnScalarNillable
+      querytype: query
+      description: ""
+      type:
+        name: Boolean
+        type: bool
+        nonnull: false
+        description: ""
+        kind: SCALAR
+        list: false
+        listnonnull: false
+        fields: {}
+      arguments:
+        input:
+            name: Boolean
+            type: bool
+            nonnull: false
+            description: ""
+            kind: SCALAR
+            list: false
+            listnonnull: false
+            fields: {}
+    - name: simple
+      querytype: query
+      description: ""
+      type:
+        name: Output
+        type: Output
+        nonnull: true
+        description: ""
+        kind: OBJECT
+        list: false
+        listnonnull: false
+        fields: {}
+      arguments: {}
+    - name: simpleArgument
+      querytype: query
+      description: ""
+      type:
+        name: Output
+        type: Output
+        nonnull: true
+        description: ""
+        kind: OBJECT
+        list: false
+        listnonnull: false
+        fields: {}
+      arguments:
+        input:
+            name: String
+            type: string
+            nonnull: true
+            description: ""
+            kind: SCALAR
+            list: false
+            listnonnull: false
+            fields: {}
+    - name: simpleArgumentNillable
+      querytype: query
+      description: ""
+      type:
+        name: OutputNillable
+        type: OutputNillable
+        nonnull: true
+        description: ""
+        kind: OBJECT
+        list: false
+        listnonnull: false
+        fields: {}
+      arguments:
+        input:
+            name: String
+            type: string
+            nonnull: false
+            description: ""
+            kind: SCALAR
+            list: false
+            listnonnull: false
+            fields: {}
+    - name: simpleNillable
+      querytype: query
+      description: ""
+      type:
+        name: Output
+        type: Output
+        nonnull: false
+        description: ""
+        kind: OBJECT
+        list: false
+        listnonnull: false
+        fields: {}
+      arguments: {}
+types:
+    - name: Output
+      type: Output
+      nonnull: false
+      description: ""
+      kind: OBJECT
+      list: false
+      listnonnull: false
+      fields:
+        input:
+            name: String
+            type: string
+            nonnull: true
+            description: ""
+            kind: SCALAR
+            list: false
+            listnonnull: false
+            fields: {}
+    - name: OutputNillable
+      type: OutputNillable
+      nonnull: false
+      description: ""
+      kind: OBJECT
+      list: false
+      listnonnull: false
+      fields:
+        input:
+            name: String
+            type: string
+            nonnull: false
+            description: ""
+            kind: SCALAR
+            list: false
+            listnonnull: false
+            fields: {}

@@ -63,6 +63,89 @@ func New(protoClient graphqlclientgen.ProtoClient) Client {
 	}
 }
 
+// ReturnScalar (query)
+func (client Client) ReturnScalar(
+	ctx context.Context,
+	input bool,
+) (bool, error) {
+	fieldsContent := ""
+
+	body := graphqlclientgen.Body{
+		Query: fmt.Sprintf(`
+        query ($input: Boolean!) {
+            returnScalar (input: $input)%s
+        }`, fieldsContent),
+		Variables: map[string]any{
+			"input": input,
+		},
+	}
+
+	var res graphqlclientgen.Response
+	if err := client.protoClient.Do(ctx, body, &res); err != nil {
+		var placeholder bool
+		return placeholder, err
+	}
+
+	var data struct {
+		ReturnScalar bool `json:"returnScalar"`
+	}
+
+	if len(res.Errors) > 0 {
+		var err error
+		for _, e := range res.Errors {
+			err = errors.Join(err, errors.New(e.Message))
+		}
+		return data.ReturnScalar, err
+	}
+
+	if err := json.Unmarshal(res.Data, &data); err != nil {
+		return data.ReturnScalar, err
+	}
+
+	return data.ReturnScalar, nil
+}
+
+// ReturnScalarNillable (query)
+func (client Client) ReturnScalarNillable(
+	ctx context.Context,
+	input *bool,
+) (*bool, error) {
+	fieldsContent := ""
+
+	body := graphqlclientgen.Body{
+		Query: fmt.Sprintf(`
+        query ($input: Boolean) {
+            returnScalarNillable (input: $input)%s
+        }`, fieldsContent),
+		Variables: map[string]any{
+			"input": input,
+		},
+	}
+
+	var res graphqlclientgen.Response
+	if err := client.protoClient.Do(ctx, body, &res); err != nil {
+		return nil, err
+	}
+
+	var data struct {
+		ReturnScalarNillable *bool `json:"returnScalarNillable"`
+	}
+
+	if len(res.Errors) > 0 {
+		var err error
+		for _, e := range res.Errors {
+			err = errors.Join(err, errors.New(e.Message))
+		}
+		return nil, err
+	}
+
+	if err := json.Unmarshal(res.Data, &data); err != nil {
+		return nil, err
+	}
+
+	return data.ReturnScalarNillable, nil
+}
+
 // Simple (query)
 func (client Client) Simple(
 	ctx context.Context,
@@ -72,12 +155,12 @@ func (client Client) Simple(
 	for _, field := range fields {
 		s = append(s, field.OutputFieldGraphQL())
 	}
-	fieldsContent := strings.Join(s, ",")
+	fieldsContent := fmt.Sprintf(" { %s }", strings.Join(s, ","))
 
 	body := graphqlclientgen.Body{
 		Query: fmt.Sprintf(`
         query {
-            simple { %s }
+            simple%s
         }`, fieldsContent),
 		Variables: map[string]any{},
 	}
@@ -116,12 +199,12 @@ func (client Client) SimpleArgument(
 	for _, field := range fields {
 		s = append(s, field.OutputFieldGraphQL())
 	}
-	fieldsContent := strings.Join(s, ",")
+	fieldsContent := fmt.Sprintf(" { %s }", strings.Join(s, ","))
 
 	body := graphqlclientgen.Body{
 		Query: fmt.Sprintf(`
         query ($input: String!) {
-            simpleArgument (input: $input) { %s }
+            simpleArgument (input: $input)%s
         }`, fieldsContent),
 		Variables: map[string]any{
 			"input": input,
@@ -162,12 +245,12 @@ func (client Client) SimpleArgumentNillable(
 	for _, field := range fields {
 		s = append(s, field.OutputNillableFieldGraphQL())
 	}
-	fieldsContent := strings.Join(s, ",")
+	fieldsContent := fmt.Sprintf(" { %s }", strings.Join(s, ","))
 
 	body := graphqlclientgen.Body{
 		Query: fmt.Sprintf(`
         query ($input: String) {
-            simpleArgumentNillable (input: $input) { %s }
+            simpleArgumentNillable (input: $input)%s
         }`, fieldsContent),
 		Variables: map[string]any{
 			"input": input,
@@ -207,12 +290,12 @@ func (client Client) SimpleNillable(
 	for _, field := range fields {
 		s = append(s, field.OutputFieldGraphQL())
 	}
-	fieldsContent := strings.Join(s, ",")
+	fieldsContent := fmt.Sprintf(" { %s }", strings.Join(s, ","))
 
 	body := graphqlclientgen.Body{
 		Query: fmt.Sprintf(`
         query {
-            simpleNillable { %s }
+            simpleNillable%s
         }`, fieldsContent),
 		Variables: map[string]any{},
 	}
@@ -223,7 +306,7 @@ func (client Client) SimpleNillable(
 	}
 
 	var data struct {
-		SimpleNillable Output `json:"simpleNillable"`
+		SimpleNillable *Output `json:"simpleNillable"`
 	}
 
 	if len(res.Errors) > 0 {
@@ -238,5 +321,5 @@ func (client Client) SimpleNillable(
 		return nil, err
 	}
 
-	return &data.SimpleNillable, nil
+	return data.SimpleNillable, nil
 }

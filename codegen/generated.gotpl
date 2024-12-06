@@ -121,7 +121,7 @@ func New(protoClient graphqlclientgen.ProtoClient) Client {
         {{- else }}
             ,
         {{- end -}}
-        ${{ $name }}: {{ if $argument.List }}[{{ end }}{{ $argument.Name }}{{ if $argument.NonNull }}!{{ end }}{{ if $argument.List }}}{{ end }}{{ if $argument.ListNonNull }}!{{ end }}
+        ${{ $name }}: {{ if $argument.List }}[{{ end }}{{ $argument.Name }}{{ if $argument.NonNull }}!{{ end }}{{ if $argument.List }}]{{ end }}{{ if $argument.ListNonNull }}!{{ end }}
     {{- end -}}
 {{ end }}
 

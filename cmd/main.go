@@ -19,7 +19,7 @@ func main() {
 				Value: false,
 			},
 		},
-		Before: func(ctx context.Context, c *cli.Command) error {
+		Before: func(ctx context.Context, c *cli.Command) (context.Context, error) {
 			var logLevel = new(slog.LevelVar)
 			if c.Bool("verbose") {
 				logLevel.Set(slog.LevelDebug)
@@ -28,7 +28,7 @@ func main() {
 				Level: logLevel,
 			}))
 			slog.SetDefault(logger)
-			return nil
+			return ctx, nil
 		},
 		Commands: []*cli.Command{
 			{

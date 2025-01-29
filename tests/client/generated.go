@@ -5,7 +5,6 @@ package client
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"strings"
 
@@ -63,6 +62,40 @@ func New(protoClient graphqlclientgen.ProtoClient) Client {
 	}
 }
 
+// CustomError (query)
+func (client Client) CustomError(
+	ctx context.Context,
+) (*bool, error) {
+	fieldsContent := ""
+
+	body := graphqlclientgen.Body{
+		Query: fmt.Sprintf(`
+        query {
+            customError%s
+        }`, fieldsContent),
+		Variables: map[string]any{},
+	}
+
+	var res graphqlclientgen.Response
+	if err := client.protoClient.Do(ctx, body, &res); err != nil {
+		return nil, err
+	}
+
+	var data struct {
+		CustomError *bool `json:"customError"`
+	}
+
+	if res.Errors != nil {
+		return nil, *res.Errors
+	}
+
+	if err := json.Unmarshal(res.Data, &data); err != nil {
+		return nil, err
+	}
+
+	return data.CustomError, nil
+}
+
 // ReturnScalar (query)
 func (client Client) ReturnScalar(
 	ctx context.Context,
@@ -90,12 +123,8 @@ func (client Client) ReturnScalar(
 		ReturnScalar bool `json:"returnScalar"`
 	}
 
-	if len(res.Errors) > 0 {
-		var err error
-		for _, e := range res.Errors {
-			err = errors.Join(err, errors.New(e.Message))
-		}
-		return data.ReturnScalar, err
+	if res.Errors != nil {
+		return data.ReturnScalar, *res.Errors
 	}
 
 	if err := json.Unmarshal(res.Data, &data); err != nil {
@@ -131,12 +160,8 @@ func (client Client) ReturnScalarNillable(
 		ReturnScalarNillable *bool `json:"returnScalarNillable"`
 	}
 
-	if len(res.Errors) > 0 {
-		var err error
-		for _, e := range res.Errors {
-			err = errors.Join(err, errors.New(e.Message))
-		}
-		return nil, err
+	if res.Errors != nil {
+		return nil, *res.Errors
 	}
 
 	if err := json.Unmarshal(res.Data, &data); err != nil {
@@ -174,12 +199,8 @@ func (client Client) Simple(
 		Simple Output `json:"simple"`
 	}
 
-	if len(res.Errors) > 0 {
-		var err error
-		for _, e := range res.Errors {
-			err = errors.Join(err, errors.New(e.Message))
-		}
-		return data.Simple, err
+	if res.Errors != nil {
+		return data.Simple, *res.Errors
 	}
 
 	if err := json.Unmarshal(res.Data, &data); err != nil {
@@ -220,12 +241,8 @@ func (client Client) SimpleArgument(
 		SimpleArgument Output `json:"simpleArgument"`
 	}
 
-	if len(res.Errors) > 0 {
-		var err error
-		for _, e := range res.Errors {
-			err = errors.Join(err, errors.New(e.Message))
-		}
-		return data.SimpleArgument, err
+	if res.Errors != nil {
+		return data.SimpleArgument, *res.Errors
 	}
 
 	if err := json.Unmarshal(res.Data, &data); err != nil {
@@ -266,12 +283,8 @@ func (client Client) SimpleArgumentNillable(
 		SimpleArgumentNillable OutputNillable `json:"simpleArgumentNillable"`
 	}
 
-	if len(res.Errors) > 0 {
-		var err error
-		for _, e := range res.Errors {
-			err = errors.Join(err, errors.New(e.Message))
-		}
-		return data.SimpleArgumentNillable, err
+	if res.Errors != nil {
+		return data.SimpleArgumentNillable, *res.Errors
 	}
 
 	if err := json.Unmarshal(res.Data, &data); err != nil {
@@ -309,12 +322,8 @@ func (client Client) SimpleNillable(
 		SimpleNillable *Output `json:"simpleNillable"`
 	}
 
-	if len(res.Errors) > 0 {
-		var err error
-		for _, e := range res.Errors {
-			err = errors.Join(err, errors.New(e.Message))
-		}
-		return nil, err
+	if res.Errors != nil {
+		return nil, *res.Errors
 	}
 
 	if err := json.Unmarshal(res.Data, &data); err != nil {

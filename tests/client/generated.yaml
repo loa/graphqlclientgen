@@ -1,4 +1,17 @@
 functions:
+    - name: customError
+      querytype: query
+      description: ""
+      type:
+        name: Boolean
+        type: bool
+        nonnull: false
+        description: ""
+        kind: SCALAR
+        list: false
+        listnonnull: false
+        fields: {}
+      arguments: {}
     - name: returnScalar
       querytype: query
       description: ""

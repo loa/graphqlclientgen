@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/loa/graphqlclientgen"
 	"github.com/loa/graphqlclientgen/tests/client"
 	"github.com/stretchr/testify/require"
 )
@@ -101,4 +102,15 @@ func TestNatsReturnScalarNillable(t *testing.T) {
 			require.Equal(t, test, actual)
 		})
 	}
+}
+
+func TestNatsCustomError(t *testing.T) {
+	c, teardown := setupGraph(t)
+	defer teardown()
+
+	_, err := c.CustomError(context.TODO())
+
+	var gerr graphqlclientgen.Error
+	require.ErrorAs(t, err, &gerr)
+	require.True(t, gerr.ExtensionEqualString("code", "NOT_FOUND"))
 }

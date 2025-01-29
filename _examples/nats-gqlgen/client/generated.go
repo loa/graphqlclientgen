@@ -5,7 +5,6 @@ package client
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"strings"
 
@@ -113,12 +112,12 @@ func (client Client) CreateTodo(
 	for _, field := range fields {
 		s = append(s, field.TodoFieldGraphQL())
 	}
-	fieldsContent := strings.Join(s, ",")
+	fieldsContent := fmt.Sprintf(" { %s }", strings.Join(s, ","))
 
 	body := graphqlclientgen.Body{
 		Query: fmt.Sprintf(`
         mutation ($input: NewTodo!) {
-            createTodo (input: $input) { %s }
+            createTodo (input: $input)%s
         }`, fieldsContent),
 		Variables: map[string]any{
 			"input": input,
@@ -134,12 +133,8 @@ func (client Client) CreateTodo(
 		CreateTodo Todo `json:"createTodo"`
 	}
 
-	if len(res.Errors) > 0 {
-		var err error
-		for _, e := range res.Errors {
-			err = errors.Join(err, errors.New(e.Message))
-		}
-		return data.CreateTodo, err
+	if res.Errors != nil {
+		return data.CreateTodo, *res.Errors
 	}
 
 	if err := json.Unmarshal(res.Data, &data); err != nil {
@@ -159,12 +154,12 @@ func (client Client) Todo(
 	for _, field := range fields {
 		s = append(s, field.TodoFieldGraphQL())
 	}
-	fieldsContent := strings.Join(s, ",")
+	fieldsContent := fmt.Sprintf(" { %s }", strings.Join(s, ","))
 
 	body := graphqlclientgen.Body{
 		Query: fmt.Sprintf(`
         query ($id: ID!) {
-            todo (id: $id) { %s }
+            todo (id: $id)%s
         }`, fieldsContent),
 		Variables: map[string]any{
 			"id": id,
@@ -180,12 +175,8 @@ func (client Client) Todo(
 		Todo Todo `json:"todo"`
 	}
 
-	if len(res.Errors) > 0 {
-		var err error
-		for _, e := range res.Errors {
-			err = errors.Join(err, errors.New(e.Message))
-		}
-		return data.Todo, err
+	if res.Errors != nil {
+		return data.Todo, *res.Errors
 	}
 
 	if err := json.Unmarshal(res.Data, &data); err != nil {
@@ -204,12 +195,12 @@ func (client Client) Todos(
 	for _, field := range fields {
 		s = append(s, field.TodoFieldGraphQL())
 	}
-	fieldsContent := strings.Join(s, ",")
+	fieldsContent := fmt.Sprintf(" { %s }", strings.Join(s, ","))
 
 	body := graphqlclientgen.Body{
 		Query: fmt.Sprintf(`
         query {
-            todos { %s }
+            todos%s
         }`, fieldsContent),
 		Variables: map[string]any{},
 	}
@@ -223,12 +214,8 @@ func (client Client) Todos(
 		Todos []Todo `json:"todos"`
 	}
 
-	if len(res.Errors) > 0 {
-		var err error
-		for _, e := range res.Errors {
-			err = errors.Join(err, errors.New(e.Message))
-		}
-		return data.Todos, err
+	if res.Errors != nil {
+		return data.Todos, *res.Errors
 	}
 
 	if err := json.Unmarshal(res.Data, &data); err != nil {
@@ -248,12 +235,12 @@ func (client Client) User(
 	for _, field := range fields {
 		s = append(s, field.UserFieldGraphQL())
 	}
-	fieldsContent := strings.Join(s, ",")
+	fieldsContent := fmt.Sprintf(" { %s }", strings.Join(s, ","))
 
 	body := graphqlclientgen.Body{
 		Query: fmt.Sprintf(`
         query ($id: UUID!) {
-            user (id: $id) { %s }
+            user (id: $id)%s
         }`, fieldsContent),
 		Variables: map[string]any{
 			"id": id,
@@ -269,12 +256,8 @@ func (client Client) User(
 		User User `json:"user"`
 	}
 
-	if len(res.Errors) > 0 {
-		var err error
-		for _, e := range res.Errors {
-			err = errors.Join(err, errors.New(e.Message))
-		}
-		return data.User, err
+	if res.Errors != nil {
+		return data.User, *res.Errors
 	}
 
 	if err := json.Unmarshal(res.Data, &data); err != nil {
@@ -293,12 +276,12 @@ func (client Client) Users(
 	for _, field := range fields {
 		s = append(s, field.UserFieldGraphQL())
 	}
-	fieldsContent := strings.Join(s, ",")
+	fieldsContent := fmt.Sprintf(" { %s }", strings.Join(s, ","))
 
 	body := graphqlclientgen.Body{
 		Query: fmt.Sprintf(`
         query {
-            users { %s }
+            users%s
         }`, fieldsContent),
 		Variables: map[string]any{},
 	}
@@ -312,12 +295,8 @@ func (client Client) Users(
 		Users []User `json:"users"`
 	}
 
-	if len(res.Errors) > 0 {
-		var err error
-		for _, e := range res.Errors {
-			err = errors.Join(err, errors.New(e.Message))
-		}
-		return data.Users, err
+	if res.Errors != nil {
+		return data.Users, *res.Errors
 	}
 
 	if err := json.Unmarshal(res.Data, &data); err != nil {

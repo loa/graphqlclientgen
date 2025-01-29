@@ -4,10 +4,10 @@ functions:
       description: createTodo create a new todo
       type:
         name: Todo
-        type: ""
+        type: Todo
         nonnull: true
         description: ""
-        kind: ""
+        kind: OBJECT
         list: false
         listnonnull: false
         fields: {}
@@ -17,7 +17,7 @@ functions:
             type: NewTodo
             nonnull: true
             description: ""
-            kind: ""
+            kind: OBJECT
             list: false
             listnonnull: false
             fields: {}
@@ -26,10 +26,10 @@ functions:
       description: todo get todo
       type:
         name: Todo
-        type: ""
+        type: Todo
         nonnull: true
         description: ""
-        kind: ""
+        kind: OBJECT
         list: false
         listnonnull: false
         fields: {}
@@ -39,7 +39,7 @@ functions:
             type: string
             nonnull: true
             description: ""
-            kind: ""
+            kind: SCALAR
             list: false
             listnonnull: false
             fields: {}
@@ -48,10 +48,10 @@ functions:
       description: todos get all todos
       type:
         name: Todo
-        type: ""
+        type: Todo
         nonnull: true
         description: ""
-        kind: ""
+        kind: OBJECT
         list: true
         listnonnull: true
         fields: {}
@@ -61,10 +61,10 @@ functions:
       description: ""
       type:
         name: User
-        type: ""
+        type: User
         nonnull: true
         description: ""
-        kind: ""
+        kind: OBJECT
         list: false
         listnonnull: false
         fields: {}
@@ -74,7 +74,7 @@ functions:
             type: uuid.UUID
             nonnull: true
             description: ""
-            kind: ""
+            kind: SCALAR
             list: false
             listnonnull: false
             fields: {}
@@ -83,10 +83,10 @@ functions:
       description: ""
       type:
         name: User
-        type: ""
+        type: User
         nonnull: true
         description: ""
-        kind: ""
+        kind: OBJECT
         list: true
         listnonnull: true
         fields: {}

@@ -7,7 +7,9 @@ package graph
 import (
 	"context"
 
+	"github.com/99designs/gqlgen/graphql"
 	"github.com/loa/graphqlclientgen/tests/graph/model"
+	"github.com/vektah/gqlparser/v2/gqlerror"
 )
 
 // Simple is the resolver for the simple field.
@@ -38,6 +40,21 @@ func (r *queryResolver) ReturnScalar(ctx context.Context, input bool) (bool, err
 // ReturnScalarNillable is the resolver for the returnScalarNillable field.
 func (r *queryResolver) ReturnScalarNillable(ctx context.Context, input *bool) (*bool, error) {
 	return input, nil
+}
+
+// CustomError is the resolver for the customError field.
+func (r *queryResolver) CustomError(ctx context.Context) (*bool, error) {
+	errList := gqlerror.List{}
+
+	errList = append(errList, &gqlerror.Error{
+		Path:    graphql.GetPath(ctx),
+		Message: "A descriptive error message",
+		Extensions: map[string]any{
+			"code": "NOT_FOUND",
+		},
+	})
+
+	return nil, errList
 }
 
 // Query returns QueryResolver implementation.

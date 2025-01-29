@@ -5,7 +5,6 @@ package {{ .Config.Client.Package }}
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"strings"
 
@@ -192,15 +191,11 @@ func (client Client) {{ $fun.Name | capitalize }}({{ template "functionArguments
     {{- end }}
     }
 
-    if len(res.Errors) > 0 {
-        var err error
-        for _, e := range res.Errors {
-            err = errors.Join(err, errors.New(e.Message))
-        }
+    if res.Errors != nil {
         {{- if $fun.Type.NonNull }}
-        return data.{{ $fun.Name | capitalize }}, err
+        return data.{{ $fun.Name | capitalize }}, *res.Errors
         {{- else }}
-        return nil, err
+        return nil, *res.Errors
         {{- end }}
     }
 

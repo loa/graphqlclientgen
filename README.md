@@ -64,5 +64,17 @@ func Example() {
         client.UserFieldName,
       },
     })
+
+  if err != nil {
+    var gerr graphqlclientgen.Error
+    if errors.As(err, &gerr) {
+      // match errors by extension
+      if gerr.ExtensionEqualString("code", "NOT_FOUND") {
+        // handle user not found
+      } else if gerr.ExtensionEqualString("code", "INVALID_INPUT") {
+        // handle invalid text input
+      }
+    }
   }
+}
 ```

@@ -13,4 +13,5 @@ type Query {
     simpleArgumentNillable(input: String): OutputNillable!
     returnScalar(input: Boolean!): Boolean!
     returnScalarNillable(input: Boolean): Boolean
+    customError: Boolean
 }

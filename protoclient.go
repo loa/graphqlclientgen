@@ -17,11 +17,6 @@ type (
 
 	Response struct {
 		Data   json.RawMessage `json:"data"`
-		Errors []Error         `json:"errors"`
-	}
-
-	Error struct {
-		Message    string            `json:"message"`
-		Extensions map[string]string `json:"extensions"`
+		Errors *Error          `json:"errors"`
 	}
 )

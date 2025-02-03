@@ -34,13 +34,27 @@ func actionInit(ctx context.Context, c *cli.Command) error {
 		defer f.Close()
 
 		config := struct {
-			Schema []string
-			Client map[string]string
+			Schema       []string                     `yaml:"schema"`
+			Client       map[string]string            `yaml:"client"`
+			TypeMappings map[string]map[string]string `yaml:"typeMappings"`
 		}{
 			Schema: []string{c.String("schema-path")},
 			Client: map[string]string{
 				"dir":     ".",
 				"package": packageName,
+			},
+			TypeMappings: map[string]map[string]string{
+				"Int64": {
+					"name": "int",
+				},
+				"Time": {
+					"name":   "Time",
+					"import": "time",
+				},
+				"UUID": {
+					"name":   "UUID",
+					"import": "github.com/google/uuid",
+				},
 			},
 		}
 

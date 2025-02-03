@@ -10,7 +10,12 @@ client:
   package: client
 
 typeMappings:
+  Int64:
+    name: int
+  Time:
+    import: time
+    name: Time
   UUID:
     # alias: foobar
-    name: UUID
     import: github.com/google/uuid
+    name: UUID

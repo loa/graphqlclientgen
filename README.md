@@ -15,30 +15,20 @@ This is an experiment of generating GraphQL clients in Golang. It's heavily insp
 
 ## Get started
 
-1. Add graphqlclientgen to `tools.go`
-   ```golang
-   //go:build tools
-
-   package tools
-
-   import (
-     _ "github.com/loa/graphqlclientgen/cmd"
-   )
-   ```
-2. Run go tidy to add graphqlclientgen as dependency
+1. Add graphqlclientgen
    ```bash
-   go mod tidy
+   go get -tool github.com/loa/graphqlclientgen"
    ```
-3. Create a new directory and run graphqlclientgen init
+2. Create a new directory and run graphqlclientgen init
    ```bash
    mkdir exampleclient
    cd exampleclient
 
-   go run github.com/loa/graphqlclientgen/cmd init --schema-path='../graph/*.graphqls'
+   go tool graphqlclientgen init --schema-path='../graph/*.graphqls'
    ```
-4. Run generate _(init creates `exampleclient.go` with go gen comment)_
+3. Run generate _(init creates `exampleclient.go` with go gen comment)_
    ```bash
-   go generate .
+   go generate -v ./...
    ```
 
 ## Examples
@@ -46,7 +36,7 @@ This is an experiment of generating GraphQL clients in Golang. It's heavily insp
 ```golang
 func Example() {
   // create client, supports custom protocols through ProtoClient interface
-  c := client.New(graphqlclientgen.NewHttpClient("http://localhost:8080/query"))
+  c := client.New(graphqlclient.NewHttpClient("http://localhost:8080/query"))
 
   todo, err := c.CreateTodo(context.TODO(),
     // static typed inputs
@@ -66,7 +56,7 @@ func Example() {
     })
 
   if err != nil {
-    var gerr graphqlclientgen.Error
+    var gerr graphqlclient.Error
     if errors.As(err, &gerr) {
       // match errors by extension
       if gerr.ExtensionEqualString("code", "NOT_FOUND") {

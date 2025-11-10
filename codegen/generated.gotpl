@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"strings"
 
-    "github.com/loa/graphqlclientgen"
+    "github.com/loa/graphqlclientgen/graphqlclient"
     {{- range .Config.TypeMappings }}
         {{- if .Import }}
     {{ if .Alias }}{{ .Alias }} {{ end }}"{{ .Import }}"
@@ -20,7 +20,7 @@ import (
 type (
     // Client for graphqlclient
     Client struct {
-		protoClient graphqlclientgen.ProtoClient
+		protoClient graphqlclient.ProtoClient
     }
 
 {{ range $type := .Schema.Types }}
@@ -86,7 +86,7 @@ func (fields {{ $type.Name }}Field{{ $name | capitalize }}) {{ $type.Name | capi
 {{- end }}
 
 // New create new graphqlclient
-func New(protoClient graphqlclientgen.ProtoClient) Client {
+func New(protoClient graphqlclient.ProtoClient) Client {
 	return Client{
 		protoClient: protoClient,
 	}
@@ -149,7 +149,7 @@ func (client Client) {{ $fun.Name | capitalize }}({{ template "functionArguments
 	fieldsContent := ""
     {{- end }}
 
-    body := graphqlclientgen.Body{
+    body := graphqlclient.Body{
         Query: fmt.Sprintf(`
         {{ $fun.QueryType }} {{ with $fun.Arguments }}({{ template "operationArguments" . }}) {{ end }}{
             {{ $fun.Name }} {{- with $fun.Arguments }} ({{ template "queryArguments" . }}){{ end }}%s
@@ -161,7 +161,7 @@ func (client Client) {{ $fun.Name | capitalize }}({{ template "functionArguments
         },
     }
 
-    var res graphqlclientgen.Response
+    var res graphqlclient.Response
     if err := client.protoClient.Do(ctx, body, &res); err != nil {
         {{- if and $fun.Type.NonNull (not $fun.Type.List)}}
             {{- if ne $fun.Type.Kind "SCALAR" }}

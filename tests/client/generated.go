@@ -8,13 +8,13 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/loa/graphqlclientgen"
+	"github.com/loa/graphqlclientgen/graphqlclient"
 )
 
 type (
 	// Client for graphqlclient
 	Client struct {
-		protoClient graphqlclientgen.ProtoClient
+		protoClient graphqlclient.ProtoClient
 	}
 
 	// Output
@@ -56,7 +56,7 @@ func (field OutputNillableFieldScalar) OutputNillableFieldGraphQL() string {
 }
 
 // New create new graphqlclient
-func New(protoClient graphqlclientgen.ProtoClient) Client {
+func New(protoClient graphqlclient.ProtoClient) Client {
 	return Client{
 		protoClient: protoClient,
 	}
@@ -68,7 +68,7 @@ func (client Client) CustomError(
 ) (*bool, error) {
 	fieldsContent := ""
 
-	body := graphqlclientgen.Body{
+	body := graphqlclient.Body{
 		Query: fmt.Sprintf(`
         query {
             customError%s
@@ -76,7 +76,7 @@ func (client Client) CustomError(
 		Variables: map[string]any{},
 	}
 
-	var res graphqlclientgen.Response
+	var res graphqlclient.Response
 	if err := client.protoClient.Do(ctx, body, &res); err != nil {
 		return nil, err
 	}
@@ -103,7 +103,7 @@ func (client Client) ReturnScalar(
 ) (bool, error) {
 	fieldsContent := ""
 
-	body := graphqlclientgen.Body{
+	body := graphqlclient.Body{
 		Query: fmt.Sprintf(`
         query ($input: Boolean!) {
             returnScalar (input: $input)%s
@@ -113,7 +113,7 @@ func (client Client) ReturnScalar(
 		},
 	}
 
-	var res graphqlclientgen.Response
+	var res graphqlclient.Response
 	if err := client.protoClient.Do(ctx, body, &res); err != nil {
 		var placeholder bool
 		return placeholder, err
@@ -141,7 +141,7 @@ func (client Client) ReturnScalarNillable(
 ) (*bool, error) {
 	fieldsContent := ""
 
-	body := graphqlclientgen.Body{
+	body := graphqlclient.Body{
 		Query: fmt.Sprintf(`
         query ($input: Boolean) {
             returnScalarNillable (input: $input)%s
@@ -151,7 +151,7 @@ func (client Client) ReturnScalarNillable(
 		},
 	}
 
-	var res graphqlclientgen.Response
+	var res graphqlclient.Response
 	if err := client.protoClient.Do(ctx, body, &res); err != nil {
 		return nil, err
 	}
@@ -182,7 +182,7 @@ func (client Client) Simple(
 	}
 	fieldsContent := fmt.Sprintf(" { %s }", strings.Join(s, ","))
 
-	body := graphqlclientgen.Body{
+	body := graphqlclient.Body{
 		Query: fmt.Sprintf(`
         query {
             simple%s
@@ -190,7 +190,7 @@ func (client Client) Simple(
 		Variables: map[string]any{},
 	}
 
-	var res graphqlclientgen.Response
+	var res graphqlclient.Response
 	if err := client.protoClient.Do(ctx, body, &res); err != nil {
 		return Output{}, err
 	}
@@ -222,7 +222,7 @@ func (client Client) SimpleArgument(
 	}
 	fieldsContent := fmt.Sprintf(" { %s }", strings.Join(s, ","))
 
-	body := graphqlclientgen.Body{
+	body := graphqlclient.Body{
 		Query: fmt.Sprintf(`
         query ($input: String!) {
             simpleArgument (input: $input)%s
@@ -232,7 +232,7 @@ func (client Client) SimpleArgument(
 		},
 	}
 
-	var res graphqlclientgen.Response
+	var res graphqlclient.Response
 	if err := client.protoClient.Do(ctx, body, &res); err != nil {
 		return Output{}, err
 	}
@@ -264,7 +264,7 @@ func (client Client) SimpleArgumentNillable(
 	}
 	fieldsContent := fmt.Sprintf(" { %s }", strings.Join(s, ","))
 
-	body := graphqlclientgen.Body{
+	body := graphqlclient.Body{
 		Query: fmt.Sprintf(`
         query ($input: String) {
             simpleArgumentNillable (input: $input)%s
@@ -274,7 +274,7 @@ func (client Client) SimpleArgumentNillable(
 		},
 	}
 
-	var res graphqlclientgen.Response
+	var res graphqlclient.Response
 	if err := client.protoClient.Do(ctx, body, &res); err != nil {
 		return OutputNillable{}, err
 	}
@@ -305,7 +305,7 @@ func (client Client) SimpleNillable(
 	}
 	fieldsContent := fmt.Sprintf(" { %s }", strings.Join(s, ","))
 
-	body := graphqlclientgen.Body{
+	body := graphqlclient.Body{
 		Query: fmt.Sprintf(`
         query {
             simpleNillable%s
@@ -313,7 +313,7 @@ func (client Client) SimpleNillable(
 		Variables: map[string]any{},
 	}
 
-	var res graphqlclientgen.Response
+	var res graphqlclient.Response
 	if err := client.protoClient.Do(ctx, body, &res); err != nil {
 		return nil, err
 	}

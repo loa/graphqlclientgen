@@ -5,7 +5,7 @@ import (
 	"context"
 	"encoding/json"
 
-	"github.com/loa/graphqlclientgen"
+	"github.com/loa/graphqlclientgen/graphqlclient"
 	"github.com/nats-io/nats.go"
 )
 
@@ -16,8 +16,8 @@ type (
 	}
 )
 
-// NewClient creates a new Client for graphqlclientgen clients
-func NewClient(subject string, conn *nats.Conn) graphqlclientgen.ProtoClient {
+// NewClient creates a new Client for graphqlclient clients
+func NewClient(subject string, conn *nats.Conn) graphqlclient.ProtoClient {
 	natsClient := Client{
 		conn:    conn,
 		subject: subject,
@@ -27,7 +27,7 @@ func NewClient(subject string, conn *nats.Conn) graphqlclientgen.ProtoClient {
 }
 
 // Do performs nats request towards a GraphQL api
-func (client Client) Do(ctx context.Context, in graphqlclientgen.Body, out any) error {
+func (client Client) Do(ctx context.Context, in graphqlclient.Body, out any) error {
 	b, err := json.Marshal(in)
 	if err != nil {
 		return err

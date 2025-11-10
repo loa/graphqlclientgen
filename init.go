@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	tmplContent = "package {{ . }}\n\n//go:generate go run github.com/loa/graphqlclientgen/cmd generate\n"
+	tmplContent = "package {{ . }}\n\n//go:generate go tool graphqlclientgen generate\n"
 )
 
 func actionInit(ctx context.Context, c *cli.Command) error {

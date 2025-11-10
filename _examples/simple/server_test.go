@@ -14,7 +14,7 @@ import (
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/google/uuid"
-	"github.com/loa/graphqlclientgen"
+	"github.com/loa/graphqlclientgen/graphqlclient"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )
@@ -62,9 +62,9 @@ func (suite *SimpleSuite) SetupTest() {
 
 	suite.server = httptest.NewServer(gsrv)
 
-	suite.client = client.New(graphqlclientgen.NewHttpClient(
+	suite.client = client.New(graphqlclient.NewHttpClient(
 		suite.server.URL,
-		graphqlclientgen.WithHttpClient(suite.server.Client()),
+		graphqlclient.WithHttpClient(suite.server.Client()),
 	))
 }
 

@@ -1,4 +1,4 @@
-package graphqlclientgen
+package graphqlclient
 
 import (
 	"context"

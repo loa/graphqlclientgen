@@ -36,17 +36,17 @@ func TestNatsGqlGenSuite(t *testing.T) {
 }
 
 func (suite *NatsGqlGenSuite) SetupSuite() {
-	srv, err := startNatsServer()
+	var err error
+	suite.server, err = startNatsServer()
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	suite.server = srv
 
 	conn, err := nats.Connect(suite.server.ClientURL())
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	suite.client = client.New(natsproto.NewClient(
 		"example.query", conn,
 	))
@@ -93,6 +93,11 @@ func (suite *NatsGqlGenSuite) SetupTest() {
 
 	suite.sub, err = conn.Subscribe("example.query", gsrv.HandleFunc)
 	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Force a flush to ensure server processed the SUB
+	if err := conn.Flush(); err != nil {
 		log.Fatal(err)
 	}
 }

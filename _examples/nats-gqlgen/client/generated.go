@@ -9,13 +9,13 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
-	"github.com/loa/graphqlclientgen"
+	"github.com/loa/graphqlclientgen/graphqlclient"
 )
 
 type (
 	// Client for graphqlclient
 	Client struct {
-		protoClient graphqlclientgen.ProtoClient
+		protoClient graphqlclient.ProtoClient
 	}
 
 	// NewTodo
@@ -96,7 +96,7 @@ func (fields UserFieldTodos) UserFieldGraphQL() string {
 }
 
 // New create new graphqlclient
-func New(protoClient graphqlclientgen.ProtoClient) Client {
+func New(protoClient graphqlclient.ProtoClient) Client {
 	return Client{
 		protoClient: protoClient,
 	}
@@ -114,7 +114,7 @@ func (client Client) CreateTodo(
 	}
 	fieldsContent := fmt.Sprintf(" { %s }", strings.Join(s, ","))
 
-	body := graphqlclientgen.Body{
+	body := graphqlclient.Body{
 		Query: fmt.Sprintf(`
         mutation ($input: NewTodo!) {
             createTodo (input: $input)%s
@@ -124,7 +124,7 @@ func (client Client) CreateTodo(
 		},
 	}
 
-	var res graphqlclientgen.Response
+	var res graphqlclient.Response
 	if err := client.protoClient.Do(ctx, body, &res); err != nil {
 		return Todo{}, err
 	}
@@ -156,7 +156,7 @@ func (client Client) Todo(
 	}
 	fieldsContent := fmt.Sprintf(" { %s }", strings.Join(s, ","))
 
-	body := graphqlclientgen.Body{
+	body := graphqlclient.Body{
 		Query: fmt.Sprintf(`
         query ($id: ID!) {
             todo (id: $id)%s
@@ -166,7 +166,7 @@ func (client Client) Todo(
 		},
 	}
 
-	var res graphqlclientgen.Response
+	var res graphqlclient.Response
 	if err := client.protoClient.Do(ctx, body, &res); err != nil {
 		return Todo{}, err
 	}
@@ -197,7 +197,7 @@ func (client Client) Todos(
 	}
 	fieldsContent := fmt.Sprintf(" { %s }", strings.Join(s, ","))
 
-	body := graphqlclientgen.Body{
+	body := graphqlclient.Body{
 		Query: fmt.Sprintf(`
         query {
             todos%s
@@ -205,7 +205,7 @@ func (client Client) Todos(
 		Variables: map[string]any{},
 	}
 
-	var res graphqlclientgen.Response
+	var res graphqlclient.Response
 	if err := client.protoClient.Do(ctx, body, &res); err != nil {
 		return nil, err
 	}
@@ -237,7 +237,7 @@ func (client Client) User(
 	}
 	fieldsContent := fmt.Sprintf(" { %s }", strings.Join(s, ","))
 
-	body := graphqlclientgen.Body{
+	body := graphqlclient.Body{
 		Query: fmt.Sprintf(`
         query ($id: UUID!) {
             user (id: $id)%s
@@ -247,7 +247,7 @@ func (client Client) User(
 		},
 	}
 
-	var res graphqlclientgen.Response
+	var res graphqlclient.Response
 	if err := client.protoClient.Do(ctx, body, &res); err != nil {
 		return User{}, err
 	}
@@ -278,7 +278,7 @@ func (client Client) Users(
 	}
 	fieldsContent := fmt.Sprintf(" { %s }", strings.Join(s, ","))
 
-	body := graphqlclientgen.Body{
+	body := graphqlclient.Body{
 		Query: fmt.Sprintf(`
         query {
             users%s
@@ -286,7 +286,7 @@ func (client Client) Users(
 		Variables: map[string]any{},
 	}
 
-	var res graphqlclientgen.Response
+	var res graphqlclient.Response
 	if err := client.protoClient.Do(ctx, body, &res); err != nil {
 		return nil, err
 	}

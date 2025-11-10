@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/loa/graphqlclientgen"
+	graphqlclientgen "github.com/loa/graphqlclientgen/graphqlclient"
 	"github.com/loa/graphqlclientgen/tests/client"
 	"github.com/stretchr/testify/require"
 )

@@ -1,5 +1,5 @@
 package graph
 
-//go:generate go run github.com/99designs/gqlgen generate
+//go:generate go tool gqlgen generate
 
 type Resolver struct{}

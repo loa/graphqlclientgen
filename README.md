@@ -17,7 +17,7 @@ This is an experiment of generating GraphQL clients in Golang. It's heavily insp
 
 1. Add graphqlclientgen
    ```bash
-   go get -tool github.com/loa/graphqlclientgen"
+   go get -tool github.com/loa/graphqlclientgen
    ```
 2. Create a new directory and run graphqlclientgen init
    ```bash
